@@ -1,8 +1,7 @@
 from enum import Enum
-
-from fastapi import HTTPException, status
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr
 from bson import ObjectId
+import datetime
 
 
 class Role(str, Enum):
@@ -13,26 +12,13 @@ class Role(str, Enum):
 class User(BaseModel):
     id: ObjectId
     name: str
+    surname: str
+    username: str
     email: EmailStr
     password: str
+    birthdate: datetime
     role: Role
-
-    # Si no funcionase, cambiar por @validator, aunque esté deprecado (o quitar classmethod)
-    @classmethod
-    @field_validator("password")
-    def validate_password(cls, value):
-        if len(value) < 5:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"password must be longer than 4 characters: {value}")
-        return value
-
-    @classmethod
-    @field_validator("name")
-    def validate_name(cls, value):
-        if len(value) < 2:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"name must be longer than 1 character: {value}")
-        return value
+    active: bool
 
     class Config:
         arbitrary_types_allowed = True

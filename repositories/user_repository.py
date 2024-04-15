@@ -18,6 +18,10 @@ class UserRepository:
     async def get_users(self) -> List[User]:
         users = await self.collection.find({}).to_list(length=None)
         return [User(**user) for user in users]
+    
+    async def get_users_active(self, active: bool) -> List[User]:
+        users = await self.collection.find({"active": active}).to_list(length=None)
+        return [User(**user) for user in users]
 
     async def create_user(self, user: User) -> Optional[User]:
         await self.collection.insert_one(user.dict())
