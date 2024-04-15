@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Path
+from fastapi import APIRouter, Query
 from services.user_service import UserService
 from dto.user_dto import UserDtoCreate, UserDtoUpdate
 from bson import ObjectId
+from typing import Optional
 
 user_routes = APIRouter()
 user_service = UserService()
@@ -13,8 +14,11 @@ def hello_world():
 
 
 @user_routes.get("/users")
-async def get_all_users():
-    return await user_service.get_all_users()
+async def get_all_users(active: Optional[bool] = Query(None)):
+    if (active is None):
+        return await user_service.get_all_users()
+    else:
+        return await user_service.get_all_users_active(active)
 
 
 @user_routes.get("/users/{user_id_str}")
@@ -24,7 +28,7 @@ async def get_user_by_id(user_id_str: str):
 
 @user_routes.post("/users/")
 async def post_user(user: UserDtoCreate):
-    user.
+    #user.
     return await user_service.create_user(user)
 
 

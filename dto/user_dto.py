@@ -1,14 +1,17 @@
 from bson import ObjectId
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr
 from fastapi import HTTPException, status
-
+import datetime
 from model.user import Role, User
 
 
 class UserDto(BaseModel):
     id: str
     name: str
+    surname: str
+    username: str
     email: EmailStr
+    birthdate: datetime
     role: Role
 
     @classmethod
@@ -16,48 +19,75 @@ class UserDto(BaseModel):
         return UserDto(
             id=str(user.id),
             name=user.name,
+            surname=user.surname,
+            username=user.username,
             email=user.email,
+            birthdate=user.birthdate,
             role=user.role
         )
 
 
 class UserDtoCreate(BaseModel):
     name: str
+    surname: str
+    username: str
     email: EmailStr
     password: str
     repeatPassword: str
+    birthdate:datetime
     role: Role
 
     @classmethod
-    @field_validator("password")
-    # Crear los validadores a pelo y llamarlos yo mismo, sin usar field validator.
-    def passwords_match(cls, value, values):
-        if 'repeatPassword' in values and values['repeatPassword'] != value:
+    def validate_fields(cls):
+        if len(cls.name) < 2:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"passwords do not match.")
-        return value
+                                detail=f"Name must be longer than 1 character: {cls.name}")
+
+        if cls.repeatPassword != cls.password:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Passwords do not match.")
+
+        if len(cls.password) < 6:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Password must be at least 6 characters long.")
+        
+        #Hacer validador de la fecha
 
     @classmethod
-    def to_user(cls, dto):
+    def to_user(cls):
         return User(
             id=ObjectId(),
-            name=dto.name,
-            email=dto.email,
-            password=dto.password,
-            role=dto.role
+            name=cls.name,
+            surname=cls.surname,
+            username=cls.username,
+            email=cls.email,
+            password=cls.password,
+            birthdate=cls.birthdate,
+            role=cls.role,
+            active=True
         )
 
 
 class UserDtoUpdate(BaseModel):
     name: str
+    surname: str
     password: str
 
     @classmethod
-    def to_user(cls, user, dto):
+    def validate_fields(cls):
+        #hacer validador
+        return
+
+    @classmethod
+    def to_user(cls, user):
         return User(
             id=user.id,
-            name=dto.name,
+            name=cls.name,
+            surname=cls.surname,
+            username=user.username,
             email=user.email,
-            password=dto.password,
-            role=user.role
+            password=cls.password,
+            birthdate=user.birthdate,
+            role=user.role,
+            active=user.active
         )
