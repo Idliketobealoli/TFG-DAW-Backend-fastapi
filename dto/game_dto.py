@@ -19,7 +19,7 @@ class GameDto(BaseModel):
     sell_number: int
 
     @classmethod
-    def from_game(cls, game):
+    def from_game(cls, game: Game):
         return GameDto(
             id=str(game.id),
             name=game.name,
@@ -78,7 +78,7 @@ class GameDtoUpdate(BaseModel):
         return
 
     @classmethod
-    def to_game(cls, game):
+    def to_game(cls, game: Game):
         return Game(
             id=game.id,
             name=cls.name,

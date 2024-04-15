@@ -3,7 +3,7 @@ from bson import ObjectId
 from typing import List, Optional
 
 from db.database import db
-from model.game import Game, Genre, Language
+from model.game import Game
 
 
 class GameRepository:

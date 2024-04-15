@@ -15,7 +15,7 @@ class UserDto(BaseModel):
     role: Role
 
     @classmethod
-    def from_user(cls, user):
+    def from_user(cls, user: User):
         return UserDto(
             id=str(user.id),
             name=user.name,
@@ -79,7 +79,7 @@ class UserDtoUpdate(BaseModel):
         return
 
     @classmethod
-    def to_user(cls, user):
+    def to_user(cls, user: User):
         return User(
             id=user.id,
             name=cls.name,

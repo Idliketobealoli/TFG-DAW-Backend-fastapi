@@ -55,3 +55,5 @@ class Game(BaseModel):
     description: str
     release_date: datetime
     sell_number: int
+
+#Posible necesario añadir el arbitrary types allowed
