@@ -14,6 +14,12 @@ class LibraryRepository:
         if library:
             return Library(**library)
         return None
+    
+    async def get_library_by_user_id(self, user_id: ObjectId) -> Optional[Library]:
+        library = await self.collection.find_one({"user_id": user_id})
+        if library:
+            return Library(**library)
+        return None
 
     async def get_libraries(self) -> List[Library]:
         libraries = await self.collection.find({}).to_list(length=None)

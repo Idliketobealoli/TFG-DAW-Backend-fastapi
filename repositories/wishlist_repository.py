@@ -21,6 +21,8 @@ class WishlistRepository:
             return Wishlist(**wishlist)
         return None
 
+    # Sinceramente, el getAll y el findById lo quitaria tanto de wishlist como de library
+    # y dejaria solo getByUserId, create, update y delete
     async def get_wishlists(self) -> List[Wishlist]:
         wishlists = await self.collection.find({}).to_list(length=None)
         return [Wishlist(**wishlist) for wishlist in wishlists]

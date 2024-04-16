@@ -4,6 +4,7 @@ from dto.user_dto import UserDtoCreate, UserDtoUpdate
 from bson import ObjectId
 from typing import Optional
 
+
 user_routes = APIRouter()
 user_service = UserService()
 

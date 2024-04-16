@@ -3,6 +3,9 @@ from bson import ObjectId
 from fastapi import FastAPI
 from controllers.user_controller import user_routes
 from controllers.game_controller import game_routes
+from controllers.review_controller import review_routes
+from controllers.wishlist_controller import wishlist_routes
+from controllers.library_controller import library_routes
 from db.database import db
 from model.user import User, Role
 from model.game import Game, Language, Genre
@@ -24,6 +27,9 @@ app = FastAPI()
 # )
 app.include_router(user_routes)
 app.include_router(game_routes)
+app.include_router(review_routes)
+app.include_router(wishlist_routes)
+app.include_router(library_routes)
 
 
 @app.on_event("startup")

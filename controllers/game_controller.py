@@ -5,6 +5,7 @@ from model.game import Language, Genre
 from bson import ObjectId
 from typing import Optional
 
+
 game_routes = APIRouter()
 game_service = GameService()
 
