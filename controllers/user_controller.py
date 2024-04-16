@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, UploadFile, File
 from services.user_service import UserService
 from dto.user_dto import UserDtoCreate, UserDtoUpdate
 from bson import ObjectId
@@ -34,10 +34,15 @@ async def post_user(user: UserDtoCreate):
 
 
 @user_routes.put("/users/{user_id_str}")
-async def post_user(user_id_str: str, user: UserDtoUpdate):
+async def put_user(user_id_str: str, user: UserDtoUpdate):
     return await user_service.update_user(ObjectId(user_id_str), user)
 
 
+@user_routes.put("/users/upload_pfp/{user_id_str}")
+async def put_user_pfp(user_id_str: str, file: UploadFile = File(...)):
+    return await user_service.upload_profile_picture(ObjectId(user_id_str), file)
+
+
 @user_routes.delete("/users/{user_id_str}")
-async def get_user_by_id(user_id_str: str):
+async def delete_user_by_id(user_id_str: str):
     return await user_service.delete_user(ObjectId(user_id_str))

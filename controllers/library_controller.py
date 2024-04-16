@@ -21,7 +21,7 @@ async def get_library_by_id(library_id_str: str):
 
 
 @library_routes.get("/libraries/user/{user_id_str}")
-async def get_library_by_id(user_id_str: str):
+async def get_library_by_user_id(user_id_str: str):
     return await library_service.get_library_by_user_id(ObjectId(user_id_str))
 
 
@@ -31,10 +31,10 @@ async def post_library(library: LibraryDtoCreate):
 
 
 @library_routes.put("/libraries/{library_id_str}")
-async def post_library(library_id_str: str, library: LibraryDtoUpdate):
+async def put_library(library_id_str: str, library: LibraryDtoUpdate):
     return await library_service.update_library(ObjectId(library_id_str), library)
 
 
 @library_routes.delete("/libraries/{library_id_str}")
-async def get_library_by_id(library_id_str: str):
+async def delete_library_by_id(library_id_str: str):
     return await library_service.delete_library(ObjectId(library_id_str))

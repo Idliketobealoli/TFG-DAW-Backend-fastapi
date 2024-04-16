@@ -1,10 +1,10 @@
-from typing import List, Optional
-
+from typing import List, Set, Optional
 from bson import ObjectId
-
+from fastapi import UploadFile, HTTPException, status
 from dto.game_dto import GameDto, GameDtoCreate, GameDtoUpdate
 from model.game import Language, Genre
 from repositories.game_repository import GameRepository
+from db.database import db
 
 
 class GameService:
@@ -31,6 +31,37 @@ class GameService:
         if not game:
             return None
         updated_game = await self.game_repository.update_game(game_id, game_dto.to_game(game).dict())
+        if not updated_game:
+            return None
+        return GameDto.from_game(updated_game)
+    
+    async def upload_main_image(self, game_id: ObjectId, file: UploadFile):
+        game = await self.game_repository.get_game_by_id(game_id)
+        if not game:
+            return None
+        if not file.content_type.startswith("image/"):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
+                                detail="Uploaded file is not an image.")
+        image_data = await file.read()
+        image_id = await db.upload_image(image_data)
+        game.main_image = image_id
+        updated_game = await self.game_repository.update_game(game_id, game.dict())
+        if not updated_game:
+            return None
+        return GameDto.from_game(updated_game)
+    
+    async def upload_showcase_images(self, game_id: ObjectId, files: Set[UploadFile]):
+        game = await self.game_repository.get_game_by_id(game_id)
+        if not game:
+            return None
+        for file in files:
+            if not file.content_type.startswith("image/"):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
+                                    detail="Uploaded file is not an image.")
+            image_data = await file.read()
+            image_id = await db.upload_image(image_data)
+            game.game_showcase_images.add(image_id)
+        updated_game = await self.game_repository.update_game(game_id, game.dict())
         if not updated_game:
             return None
         return GameDto.from_game(updated_game)

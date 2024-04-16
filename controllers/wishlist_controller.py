@@ -21,7 +21,7 @@ async def get_wishlist_by_id(wishlist_id_str: str):
 
 
 @wishlist_routes.get("/wishlists/user/{user_id_str}")
-async def get_wishlist_by_id(user_id_str: str):
+async def get_wishlist_by_user_id(user_id_str: str):
     return await wishlist_service.get_wishlist_by_user_id(ObjectId(user_id_str))
 
 
@@ -31,10 +31,10 @@ async def post_wishlist(wishlist: WishlistDtoCreate):
 
 
 @wishlist_routes.put("/wishlists/{wishlist_id_str}")
-async def post_wishlist(wishlist_id_str: str, wishlist: WishlistDtoUpdate):
+async def put_wishlist(wishlist_id_str: str, wishlist: WishlistDtoUpdate):
     return await wishlist_service.update_wishlist(ObjectId(wishlist_id_str), wishlist)
 
 
 @wishlist_routes.delete("/wishlists/{wishlist_id_str}")
-async def get_wishlist_by_id(wishlist_id_str: str):
+async def delete_wishlist_by_id(wishlist_id_str: str):
     return await wishlist_service.delete_wishlist(ObjectId(wishlist_id_str))

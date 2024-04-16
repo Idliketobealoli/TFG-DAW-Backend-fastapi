@@ -2,7 +2,7 @@ from enum import Enum
 from pydantic import BaseModel
 from bson import ObjectId
 import datetime
-from typing import Set
+from typing import Set, Optional
 
 
 class Genre(str, Enum):
@@ -55,5 +55,7 @@ class Game(BaseModel):
     description: str
     release_date: datetime
     sell_number: int
+    main_image: Optional[ObjectId] = None
+    game_showcase_images: Set[ObjectId]
 
 #Posible necesario añadir el arbitrary types allowed

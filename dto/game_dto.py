@@ -1,8 +1,9 @@
 from bson import ObjectId
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from fastapi import HTTPException, status
 import datetime
-from typing import Set
+import base64
+from typing import Set, Optional
 from model.game import Genre, Language, Game
 
 
@@ -17,9 +18,19 @@ class GameDto(BaseModel):
     description: str
     release_date: datetime
     sell_number: int
+    main_image: Optional[str] = None
+    game_showcase_images: Set[str]
 
     @classmethod
-    def from_game(cls, game: Game):
+    def from_game(cls, game: Game, main_image_data: bytes = None, game_showcase_images_data: Set[bytes] = set()):
+        main_image_data_base64 = None
+        if main_image_data:
+            main_image_data_base64 = base64.b64encode(main_image_data).decode('utf-8')
+        showcase_images_base64 = []
+        for image_data in game_showcase_images_data:
+            image_data_base64 = base64.b64encode(image_data).decode('utf-8')
+            showcase_images_base64.append(image_data_base64)
+
         return GameDto(
             id=str(game.id),
             name=game.name,
@@ -30,7 +41,9 @@ class GameDto(BaseModel):
             rating=game.rating,
             description=game.description,
             release_date=game.release_date,
-            sell_number=game.sell_number
+            sell_number=game.sell_number,
+            main_image=main_image_data_base64,
+            game_showcase_images=showcase_images_base64
         )
     
 

@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, UploadFile, File
 from services.game_service import GameService
 from dto.game_dto import GameDtoCreate, GameDtoUpdate
 from model.game import Language, Genre
 from bson import ObjectId
-from typing import Optional
+from typing import Optional, List
 
 
 game_routes = APIRouter()
@@ -53,10 +53,20 @@ async def post_game(game: GameDtoCreate):
 
 
 @game_routes.put("/games/{game_id_str}")
-async def post_game(game_id_str: str, game: GameDtoUpdate):
+async def put_game(game_id_str: str, game: GameDtoUpdate):
     return await game_service.update_game(ObjectId(game_id_str), game)
 
 
+@game_routes.put("/games/upload_main_img/{game_id_str}")
+async def put_game_main_img(game_id_str: str, file: UploadFile = File(...)):
+    return await game_service.upload_main_image(ObjectId(game_id_str), file)
+
+
+@game_routes.put("/games/upload_showcase_imgs/{game_id_str}")
+async def put_game_showcases(game_id_str: str, files: List[UploadFile] = File(...)):
+    return await game_service.upload_showcase_images(ObjectId(game_id_str), set(files))
+
+
 @game_routes.delete("/games/{game_id_str}")
-async def get_game_by_id(game_id_str: str):
+async def delete_game_by_id(game_id_str: str):
     return await game_service.delete_game(ObjectId(game_id_str))

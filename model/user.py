@@ -2,6 +2,7 @@ from enum import Enum
 from pydantic import BaseModel, EmailStr
 from bson import ObjectId
 import datetime
+from typing import Optional
 
 
 class Role(str, Enum):
@@ -19,6 +20,7 @@ class User(BaseModel):
     birthdate: datetime
     role: Role
     active: bool
+    profile_picture: Optional[ObjectId] = None
 
     class Config:
         arbitrary_types_allowed = True

@@ -1,7 +1,10 @@
 from bson import ObjectId
 from pydantic import BaseModel, EmailStr
 from fastapi import HTTPException, status
+from typing import Optional
 import datetime
+import base64
+from services.cipher_service import encode
 from model.user import Role, User
 
 
@@ -13,9 +16,14 @@ class UserDto(BaseModel):
     email: EmailStr
     birthdate: datetime
     role: Role
+    profile_picture: Optional[str] = None
 
     @classmethod
-    def from_user(cls, user: User):
+    def from_user(cls, user: User, image_data: bytes = None):
+        image_data_base64 = None
+        if image_data:
+            image_data_base64 = base64.b64encode(image_data).decode('utf-8')
+        
         return UserDto(
             id=str(user.id),
             name=user.name,
@@ -23,8 +31,14 @@ class UserDto(BaseModel):
             username=user.username,
             email=user.email,
             birthdate=user.birthdate,
-            role=user.role
+            role=user.role,
+            profile_picture=image_data_base64
         )
+
+
+class UserDtoToken(BaseModel):
+    user: UserDto
+    token: str
 
 
 class UserDtoCreate(BaseModel):
@@ -61,7 +75,7 @@ class UserDtoCreate(BaseModel):
             surname=cls.surname,
             username=cls.username,
             email=cls.email,
-            password=cls.password,
+            password=encode(cls.password),
             birthdate=cls.birthdate,
             role=cls.role,
             active=True
@@ -86,7 +100,7 @@ class UserDtoUpdate(BaseModel):
             surname=cls.surname,
             username=user.username,
             email=user.email,
-            password=cls.password,
+            password=encode(cls.password),
             birthdate=user.birthdate,
             role=user.role,
             active=user.active

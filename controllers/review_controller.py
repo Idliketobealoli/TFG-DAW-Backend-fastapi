@@ -57,10 +57,10 @@ async def post_review(review: ReviewDtoCreate):
 
 
 @review_routes.put("/reviews/{review_id_str}")
-async def post_review(review_id_str: str, review: ReviewDtoUpdate):
+async def put_review(review_id_str: str, review: ReviewDtoUpdate):
     return await review_service.update_review(ObjectId(review_id_str), review)
 
 
 @review_routes.delete("/reviews/{review_id_str}")
-async def get_review_by_id(review_id_str: str):
+async def delete_review_by_id(review_id_str: str):
     return await review_service.delete_review(ObjectId(review_id_str))
