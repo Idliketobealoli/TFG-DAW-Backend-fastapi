@@ -118,27 +118,27 @@ class GameDtoUpdate(BaseModel):
 
     @classmethod
     def validate_fields(cls):
-        if len(cls.name) < 2:
+        if cls.name is not None and len(cls.name) < 2:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Name must be longer than 1 character: {cls.name}")
         
-        if len(cls.developer) < 5:
+        if cls.developer is not None and len(cls.developer) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Developer name must be longer than 4 character: {cls.developer}")
         
-        if len(cls.publisher) < 5:
+        if cls.publisher is not None and len(cls.publisher) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Publisher name must be longer than 4 character: {cls.publisher}")
 
-        if len(cls.genres) < 1:
+        if cls.genres is not None and len(cls.genres) < 1:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"There must be at least one genre: {cls.genres}")
         
-        if len(cls.languages) < 1:
+        if cls.languages is not None and len(cls.languages) < 1:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"There must be at least one language: {cls.languages}")
         
-        if len(cls.description) < 10:
+        if cls.description is not None and len(cls.description) < 10:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Description must be longer than 9 character: {cls.description}")
         return
