@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from bson import ObjectId
 
-from dto.wishlist_dto import WishlistDto, WishlistDtoCreate, WishlistDtoUpdate
+from dto.wishlist_dto import WishlistDto, WishlistDtoCreate
 from repositories.wishlist_repository import WishlistRepository
 
 
@@ -31,11 +31,22 @@ class WishlistService:
             return None
         return WishlistDto.from_wishlist(wishlist)
 
-    async def update_wishlist(self, wishlist_id: ObjectId, wishlist_dto: WishlistDtoUpdate) -> Optional[WishlistDto]:
+    async def add_to_wishlist(self, wishlist_id: ObjectId, game_id: ObjectId) -> Optional[WishlistDto]:
         wishlist = await self.wishlist_repository.get_wishlist_by_id(wishlist_id)
         if not wishlist:
             return None
-        updated_wishlist = await self.wishlist_repository.update_wishlist(wishlist_id, wishlist_dto.to_wishlist(wishlist).dict())
+        wishlist.add_to_wishlist(game_id)
+        updated_wishlist = await self.wishlist_repository.update_wishlist(wishlist_id, wishlist.dict())
+        if not updated_wishlist:
+            return None
+        return WishlistDto.from_wishlist(updated_wishlist)
+    
+    async def remove_from_wishlist(self, wishlist_id: ObjectId, game_id: ObjectId) -> Optional[WishlistDto]:
+        wishlist = await self.wishlist_repository.get_wishlist_by_id(wishlist_id)
+        if not wishlist:
+            return None
+        wishlist.remove_from_wishlist(game_id)
+        updated_wishlist = await self.wishlist_repository.update_wishlist(wishlist_id, wishlist.dict())
         if not updated_wishlist:
             return None
         return WishlistDto.from_wishlist(updated_wishlist)

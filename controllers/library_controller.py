@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Query
 from services.library_service import LibraryService
-from dto.library_dto import LibraryDtoCreate, LibraryDtoUpdate
+from dto.library_dto import LibraryDtoCreate
 from bson import ObjectId
-from typing import Optional
-import datetime
 
 
 library_routes = APIRouter()
@@ -30,9 +28,9 @@ async def post_library(library: LibraryDtoCreate):
     return await library_service.create_library(library)
 
 
-@library_routes.put("/libraries/{library_id_str}")
-async def put_library(library_id_str: str, library: LibraryDtoUpdate):
-    return await library_service.update_library(ObjectId(library_id_str), library)
+@library_routes.put("/libraries/add_game/{library_id_str}")
+async def add_to_library(library_id_str: str, game_id_str: str):
+    return await library_service.add_to_library(ObjectId(library_id_str), ObjectId(game_id_str))
 
 
 @library_routes.delete("/libraries/{library_id_str}")

@@ -1,6 +1,5 @@
 from bson import ObjectId
 from pydantic import BaseModel
-from fastapi import HTTPException, status
 from typing import Set
 from model.library import Library
 from dto.game_dto import GameDto
@@ -33,11 +32,6 @@ class LibraryDtoCreate(BaseModel):
     user_id: ObjectId
 
     @classmethod
-    def validate_fields(cls):
-        #hacer validador
-        return
-
-    @classmethod
     def to_library(cls):
         return Library(
             id=ObjectId(),
@@ -45,19 +39,3 @@ class LibraryDtoCreate(BaseModel):
             game_ids=set()
         )
     
-
-class LibraryDtoUpdate(BaseModel):
-    game_ids: Set[ObjectId]
-
-    @classmethod
-    def validate_fields(cls):
-        #hacer validador
-        return
-
-    @classmethod
-    def to_library(cls, library: Library):
-        return Library(
-            id=library.id,
-            user_id=library.user_id,
-            game_ids=cls.game_ids
-        )

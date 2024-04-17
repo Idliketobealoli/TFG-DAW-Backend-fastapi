@@ -5,6 +5,7 @@ import datetime
 import base64
 from typing import Set, Optional
 from model.game import Genre, Language, Game
+from db.database import db
 
 
 class GameDto(BaseModel):
@@ -22,14 +23,18 @@ class GameDto(BaseModel):
     game_showcase_images: Set[str]
 
     @classmethod
-    def from_game(cls, game: Game, main_image_data: bytes = None, game_showcase_images_data: Set[bytes] = set()):
+    def from_game(cls, game: Game):
+        main_image_data = db.get_file(game.main_image)
         main_image_data_base64 = None
-        if main_image_data:
+        if main_image_data and image_data.content_type.startswith("image/"):
             main_image_data_base64 = base64.b64encode(main_image_data).decode('utf-8')
-        showcase_images_base64 = []
-        for image_data in game_showcase_images_data:
-            image_data_base64 = base64.b64encode(image_data).decode('utf-8')
-            showcase_images_base64.append(image_data_base64)
+        
+        showcase_images_base64 = set()
+        for image in game.game_showcase_images:
+            image_data = db.get_file(image)
+            if image_data and image_data.content_type.startswith("image/"): # posible cambiar esto
+                image_data_base64 = base64.b64encode(image_data).decode('utf-8')
+                showcase_images_base64.append(image_data_base64)
 
         return GameDto(
             id=str(game.id),
@@ -58,7 +63,33 @@ class GameDtoCreate(BaseModel):
 
     @classmethod
     def validate_fields(cls):
-        #hacer validador
+        if len(cls.name) < 2:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Name must be longer than 1 character: {cls.name}")
+        
+        if len(cls.developer) < 5:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Developer name must be longer than 4 character: {cls.developer}")
+        
+        if len(cls.publisher) < 5:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Publisher name must be longer than 4 character: {cls.publisher}")
+
+        if len(cls.genres) < 1:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"There must be at least one genre: {cls.genres}")
+        
+        if len(cls.languages) < 1:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"There must be at least one language: {cls.languages}")
+        
+        if len(cls.description) < 10:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Description must be longer than 9 character: {cls.description}")
+        
+        if cls.release_date > datetime.datetime.today:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Release date must not be in the future.")
         return
 
     @classmethod
@@ -78,20 +109,55 @@ class GameDtoCreate(BaseModel):
     
 
 class GameDtoUpdate(BaseModel):
-    name: str
-    developer: str
-    publisher: str
-    genres: Set[Genre]
-    languages: Set[Language]
-    description: str
+    name: Optional[str]
+    developer: Optional[str]
+    publisher: Optional[str]
+    genres: Optional[Set[Genre]]
+    languages: Optional[Set[Language]]
+    description: Optional[str]
 
     @classmethod
     def validate_fields(cls):
-        #hacer validador
+        if len(cls.name) < 2:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Name must be longer than 1 character: {cls.name}")
+        
+        if len(cls.developer) < 5:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Developer name must be longer than 4 character: {cls.developer}")
+        
+        if len(cls.publisher) < 5:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Publisher name must be longer than 4 character: {cls.publisher}")
+
+        if len(cls.genres) < 1:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"There must be at least one genre: {cls.genres}")
+        
+        if len(cls.languages) < 1:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"There must be at least one language: {cls.languages}")
+        
+        if len(cls.description) < 10:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Description must be longer than 9 character: {cls.description}")
         return
 
     @classmethod
     def to_game(cls, game: Game):
+        if cls.name is None: 
+            cls.name = game.name
+        if cls.developer is None:
+            cls.developer = game.developer
+        if cls.publisher is None:
+            cls.publisher = game.publisher
+        if cls.genres is None:
+            cls.genres = game.genres
+        if cls.languages is None:
+            cls.languages = game.languages
+        if cls.description is None:
+            cls.description = game.description
+        
         return Game(
             id=game.id,
             name=cls.name,

@@ -43,7 +43,7 @@ class GameService:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
                                 detail="Uploaded file is not an image.")
         image_data = await file.read()
-        image_id = await db.upload_image(image_data)
+        image_id = await db.upload_file(image_data)
         game.main_image = image_id
         updated_game = await self.game_repository.update_game(game_id, game.dict())
         if not updated_game:
@@ -59,7 +59,7 @@ class GameService:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
                                     detail="Uploaded file is not an image.")
             image_data = await file.read()
-            image_id = await db.upload_image(image_data)
+            image_id = await db.upload_file(image_data)
             game.game_showcase_images.add(image_id)
         updated_game = await self.game_repository.update_game(game_id, game.dict())
         if not updated_game:

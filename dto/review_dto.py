@@ -7,6 +7,7 @@ from dto.game_dto import GameDto
 from dto.user_dto import UserDto
 from services.game_service import GameService
 from services.user_service import UserService
+from typing import Optional
 
 
 class ReviewDto(BaseModel):
@@ -38,7 +39,18 @@ class ReviewDtoCreate(BaseModel):
 
     @classmethod
     def validate_fields(cls):
-        #hacer validador
+        if cls.publish_date > datetime.datetime.today:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Publish date must not be in the future.")
+        
+        if cls.rating > 5:
+            cls.rating = 5
+        elif cls.rating < 0:
+            cls.rating = 0
+        
+        if len(cls.description) < 10:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Description must be longer than 9 character: {cls.description}")
         return
 
     @classmethod
@@ -54,16 +66,29 @@ class ReviewDtoCreate(BaseModel):
 
 
 class ReviewDtoUpdate(BaseModel):
-    rating: float
-    description: str
+    rating: Optional[float]
+    description: Optional[str]
 
     @classmethod
     def validate_fields(cls):
-        #hacer validador
+        if cls.rating is not None:
+            if cls.rating > 5:
+                cls.rating = 5
+            elif cls.rating < 0:
+                cls.rating = 0
+
+        if cls.description is not None and len(cls.description) < 10:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Description must be longer than 9 character: {cls.description}")
         return
     
     @classmethod
     def to_review(cls, review: Review):
+        if cls.rating is None:
+            cls.rating = review.rating
+        if cls.description is None:
+            cls.description = review.description
+        
         return Review(
             id=review.id,
             game_id=review.game_id,

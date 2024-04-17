@@ -31,11 +31,12 @@ class LibraryService:
             return None
         return LibraryDto.from_library(library)
 
-    async def update_library(self, library_id: ObjectId, library_dto: LibraryDtoUpdate) -> Optional[LibraryDto]:
+    async def add_to_library(self, library_id: ObjectId, game_id: ObjectId) -> Optional[LibraryDto]:
         library = await self.library_repository.get_library_by_id(library_id)
         if not library:
             return None
-        updated_library = await self.library_repository.update_library(library_id, library_dto.to_library(library).dict())
+        library.add_to_library(game_id)
+        updated_library = await self.library_repository.update_library(library_id, library.dict())
         if not updated_library:
             return None
         return LibraryDto.from_library(updated_library)

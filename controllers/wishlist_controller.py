@@ -30,9 +30,14 @@ async def post_wishlist(wishlist: WishlistDtoCreate):
     return await wishlist_service.create_wishlist(wishlist)
 
 
-@wishlist_routes.put("/wishlists/{wishlist_id_str}")
-async def put_wishlist(wishlist_id_str: str, wishlist: WishlistDtoUpdate):
-    return await wishlist_service.update_wishlist(ObjectId(wishlist_id_str), wishlist)
+@wishlist_routes.put("/wishlists/add_game/{wishlist_id_str}")
+async def add_to_wishlist(wishlist_id_str: str, game_id_str: str):
+    return await wishlist_service.add_to_wishlist(ObjectId(wishlist_id_str), ObjectId(game_id_str))
+
+
+@wishlist_routes.put("/wishlists/remove_game/{wishlist_id_str}")
+async def remove_from_wishlist(wishlist_id_str: str, game_id_str: str):
+    return await wishlist_service.remove_from_wishlist(ObjectId(wishlist_id_str), ObjectId(game_id_str))
 
 
 @wishlist_routes.delete("/wishlists/{wishlist_id_str}")

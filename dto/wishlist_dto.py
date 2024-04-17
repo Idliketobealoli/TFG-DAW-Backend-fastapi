@@ -1,6 +1,5 @@
 from bson import ObjectId
 from pydantic import BaseModel
-from fastapi import HTTPException, status
 from typing import Set
 from model.wishlist import Wishlist
 from dto.game_dto import GameDto
@@ -33,31 +32,9 @@ class WishlistDtoCreate(BaseModel):
     user_id: ObjectId
 
     @classmethod
-    def validate_fields(cls):
-        #hacer validador
-        return
-
-    @classmethod
     def to_wishlist(cls):
         return Wishlist(
             id=ObjectId(),
             user_id=cls.user_id,
             game_ids=set()
-        )
-    
-
-class WishlistDtoUpdate(BaseModel):
-    game_ids: Set[ObjectId]
-
-    @classmethod
-    def validate_fields(cls):
-        #hacer validador
-        return
-
-    @classmethod
-    def to_wishlist(cls, wishlist: Wishlist):
-        return Wishlist(
-            id=wishlist.id,
-            user_id=wishlist.user_id,
-            game_ids=cls.game_ids
         )
