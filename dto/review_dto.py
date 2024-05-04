@@ -1,5 +1,5 @@
 from bson import ObjectId
-from pydantic import BaseModel
+from pydantic import BaseModel, SkipValidation
 from fastapi import HTTPException, status
 import datetime
 from model.review import Review
@@ -14,28 +14,34 @@ class ReviewDto(BaseModel):
     id: str
     game: GameDto
     user: UserDto
-    publish_date: datetime
+    publish_date: SkipValidation[datetime]
     rating: float
     description: str
 
     @classmethod
-    def from_review(cls, review: Review, user_service: UserService, game_service: GameService):
+    async def from_review(cls, review: Review, user_service: UserService, game_service: GameService):
         return ReviewDto(
             id=str(review.id),
-            game=game_service.get_game_by_id(review.game_id),
-            user=user_service.get_user_by_id(review.user_id),
+            game=await game_service.get_game_by_id(review.game_id),
+            user=await user_service.get_user_by_id(review.user_id),
             publish_date=review.publish_date,
             rating=review.rating,
             description=review.description
         )
 
+    class Config:
+        arbitrary_types_allowed = True
+
 
 class ReviewDtoCreate(BaseModel):
     game_id: ObjectId
     user_id: ObjectId
-    publish_date: datetime
+    publish_date: SkipValidation[datetime]
     rating: float
     description: str
+
+    class Config:
+        arbitrary_types_allowed = True
 
     @classmethod
     def validate_fields(cls):
@@ -93,7 +99,7 @@ class ReviewDtoUpdate(BaseModel):
             id=review.id,
             game_id=review.game_id,
             user_id=review.user_id,
-            publish_date=datetime.now(),
+            publish_date=datetime.datetime.now(),
             rating=cls.rating,
             description=cls.description
         )

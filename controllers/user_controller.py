@@ -16,7 +16,7 @@ def hello_world():
 
 @user_routes.get("/users")
 async def get_all_users(active: Optional[bool] = Query(None)):
-    if (active is None):
+    if active is None:
         return await user_service.get_all_users()
     else:
         return await user_service.get_all_users_active(active)
@@ -29,7 +29,6 @@ async def get_user_by_id(user_id_str: str):
 
 @user_routes.post("/users/")
 async def post_user(user: UserDtoCreate):
-    #user.
     return await user_service.create_user(user)
 
 

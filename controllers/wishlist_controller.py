@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Query
 from services.wishlist_service import WishlistService
-from dto.wishlist_dto import WishlistDtoCreate, WishlistDtoUpdate
+from dto.wishlist_dto import WishlistDtoCreate
 from bson import ObjectId
-from typing import Optional
-import datetime
 
 
 wishlist_routes = APIRouter()

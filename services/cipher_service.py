@@ -1,9 +1,10 @@
 import bcrypt
 
 
-def encode(str: str) -> str:
-    return bcrypt.hashpw(str, bcrypt.gensalt(12))
+def encode(string: str) -> str:
+    return bcrypt.hashpw(string.encode('utf-8'), bcrypt.gensalt(12)).decode('utf-8')
 
 
-def match(str: str, hashed_str: str) -> bool:
-    return bcrypt.checkpw(str, hashed_str)
+def match(string: str, hashed_str: str) -> bool:
+    return bcrypt.checkpw(string.encode('utf-8'), hashed_str.encode('utf-8'))
+

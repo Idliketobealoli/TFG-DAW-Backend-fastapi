@@ -1,5 +1,5 @@
 from enum import Enum
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, SkipValidation
 from bson import ObjectId
 import datetime
 from typing import Optional
@@ -17,10 +17,10 @@ class User(BaseModel):
     username: str
     email: EmailStr
     password: str
-    birthdate: datetime
+    birthdate: SkipValidation[datetime]
     role: Role
     active: bool
-    profile_picture: Optional[ObjectId] = None
+    profile_picture: Optional[str] = None
 
     class Config:
         arbitrary_types_allowed = True

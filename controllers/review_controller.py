@@ -5,28 +5,27 @@ from bson import ObjectId
 from typing import Optional
 import datetime
 
-
 review_routes = APIRouter()
 review_service = ReviewService()
 
 
 @review_routes.get("/reviews")
 async def get_all_reviews(
-    user_id: Optional[str] = Query(None),
-    game_id: Optional[str] = Query(None),
-    rating: Optional[float] = Query(None),
-    publish_date: Optional[datetime.datetime] = Query(None)
-    ):
+        user_id: Optional[str] = Query(None),
+        game_id: Optional[str] = Query(None),
+        rating: Optional[float] = Query(None),
+        publish_date: Optional[datetime.datetime] = Query(None)
+):
     reviews = await review_service.get_all_reviews()
 
-    if user_id: #and ObjectId(user_id): 
+    if user_id:  # and ObjectId(user_id):
         # poniendo esta linea comentada arriba se asegura que solo entre si es un guid valido, 
         # pero podria llevar a casos inesperados como que si solo esta el param user_id y es invalido, devuelva todo.
         reviews = [review for review in reviews if user_id == review.user.id]
-    
+
     if game_id:
         reviews = [review for review in reviews if game_id == review.game.id]
-    
+
     if rating is not None:
         reviews = [review for review in reviews if review.rating >= rating]
 

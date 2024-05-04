@@ -14,16 +14,16 @@ class WishlistDto(BaseModel):
     games: Set[GameDto]
 
     @classmethod
-    def from_wishlist(cls, wishlist: Wishlist, user_service: UserService, game_service: GameService):
+    async def from_wishlist(cls, wishlist: Wishlist, user_service: UserService, game_service: GameService):
         game_set: Set[GameDto] = set()
-        for id in wishlist.game_ids:
-            game_to_add = game_service.get_game_by_id(id)
+        for game_id in wishlist.game_ids:
+            game_to_add = await game_service.get_game_by_id(game_id)
             if game_to_add is not None:
                 game_set.add(game_to_add)
 
         return WishlistDto(
             id=str(wishlist.id),
-            user=user_service.get_user_by_id(wishlist.user_id),
+            user=await user_service.get_user_by_id(wishlist.user_id),
             games=game_set
         )
 
@@ -38,3 +38,6 @@ class WishlistDtoCreate(BaseModel):
             user_id=cls.user_id,
             game_ids=set()
         )
+
+    class Config:
+        arbitrary_types_allowed = True

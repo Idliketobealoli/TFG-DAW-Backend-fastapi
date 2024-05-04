@@ -1,10 +1,10 @@
+import os
 from typing import List, Set, Optional
+import aiofiles
 from bson import ObjectId
 from fastapi import UploadFile, HTTPException, status
 from dto.game_dto import GameDto, GameDtoCreate, GameDtoUpdate
-from model.game import Language, Genre
 from repositories.game_repository import GameRepository
-from db.database import db
 
 
 class GameService:
@@ -43,12 +43,17 @@ class GameService:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
                                 detail="Uploaded file is not an image.")
         image_data = await file.read()
-        image_id = await db.upload_file(image_data)
-        game.main_image = image_id
+        _, extension = os.path.splitext(file.filename)
+        save_path = os.path.join("..", "resources", "game_images", f"{game_id}.{extension}")
+
+        async with aiofiles.open(save_path, "wb") as image_file:
+            await image_file.write(image_data)
+
+        game.main_image = os.path.join("resources", "game_images", f"{game_id}.{extension}")
         updated_game = await self.game_repository.update_game(game_id, game.dict())
         if not updated_game:
             return None
-        return GameDto.from_game(updated_game)
+        return GameDto.from_user(updated_game)
     
     async def upload_showcase_images(self, game_id: ObjectId, files: Set[UploadFile]):
         game = await self.game_repository.get_game_by_id(game_id)
@@ -59,12 +64,27 @@ class GameService:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
                                     detail="Uploaded file is not an image.")
             image_data = await file.read()
-            image_id = await db.upload_file(image_data)
-            game.game_showcase_images.add(image_id)
+            _, extension = os.path.splitext(file.filename)
+            save_path = os.path.join("..", "resources", "game_images", f"{game_id}-img{ObjectId()}.{extension}")
+
+            async with aiofiles.open(save_path, "wb") as image_file:
+                await image_file.write(image_data)
+
+            game.game_showcase_images.add(
+                os.path.join("resources", "game_images", f"{game_id}-img{ObjectId()}.{extension}"))
+
         updated_game = await self.game_repository.update_game(game_id, game.dict())
         if not updated_game:
             return None
         return GameDto.from_game(updated_game)
+
+    async def clear_showcase_images(self, game_id: ObjectId) -> bool:
+        game = await self.get_game_by_id(game_id)
+        if not game:
+            return False
+        game.game_showcase_images.clear()
+        updated_game = await self.game_repository.update_game(game_id, game.dict())
+        return updated_game is not None
 
     async def delete_game(self, game_id: ObjectId) -> bool:
         game = await self.get_game_by_id(game_id)

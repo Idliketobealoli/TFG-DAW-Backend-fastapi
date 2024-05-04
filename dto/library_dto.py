@@ -14,22 +14,25 @@ class LibraryDto(BaseModel):
     games: Set[GameDto]
 
     @classmethod
-    def from_library(cls, library: Library, user_service: UserService, game_service: GameService):
+    async def from_library(cls, library: Library, user_service: UserService, game_service: GameService):
         game_set: Set[GameDto] = set()
-        for id in library.game_ids:
-            game_to_add = game_service.get_game_by_id(id)
+        for game_id in library.game_ids:
+            game_to_add = await game_service.get_game_by_id(game_id)
             if game_to_add is not None:
                 game_set.add(game_to_add)
 
         return LibraryDto(
             id=str(library.id),
-            user=user_service.get_user_by_id(library.user_id),
+            user=await user_service.get_user_by_id(library.user_id),
             games=game_set
         )
 
 
 class LibraryDtoCreate(BaseModel):
     user_id: ObjectId
+
+    class Config:
+        arbitrary_types_allowed = True
 
     @classmethod
     def to_library(cls):

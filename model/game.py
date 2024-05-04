@@ -1,8 +1,8 @@
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, SkipValidation
 from bson import ObjectId
 import datetime
-from typing import Set, Optional
+from typing import Optional
 
 
 class Genre(str, Enum):
@@ -49,13 +49,14 @@ class Game(BaseModel):
     name: str
     developer: str
     publisher: str
-    genres: Set[Genre]
-    languages: Set[Language]
+    genres: [Genre]
+    languages: [Language]
     rating: float
     description: str
-    release_date: datetime
+    release_date: SkipValidation[datetime]
     sell_number: int
-    main_image: Optional[ObjectId] = None
-    game_showcase_images: Set[ObjectId]
+    main_image: Optional[str] = None
+    game_showcase_images: [str]
 
-#Posible necesario añadir el arbitrary types allowed
+    class Config:
+        arbitrary_types_allowed = True
