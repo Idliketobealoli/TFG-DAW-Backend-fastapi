@@ -14,7 +14,7 @@ There are other users (administrators) that can create games; adding their title
 
 <div align="center">
   <a href="https://devdocs.io/python~3.12/"><img name="python" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/935px-Python-logo-notext.svg.png" height="100"></img></a>
-  <a hreft="https://devdocs.io/fastapi/"><img name="fastapi" src="https://cdn.worldvectorlogo.com/logos/fastapi.svg" height="100"></img></a>
+  <a href="https://devdocs.io/fastapi/"><img name="fastapi" src="https://cdn.worldvectorlogo.com/logos/fastapi.svg" height="100"></img></a>
   <a href="https://www.mongodb.com/docs/"><img name="mongoDB" src="https://cdn.worldvectorlogo.com/logos/mongodb-icon-2.svg" height="100"></img></a>
 </div>
 
