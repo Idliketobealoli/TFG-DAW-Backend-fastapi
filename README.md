@@ -1,9 +1,6 @@
-# VGameShop
-This is the final project for the Web Application Development course at IES Laguna de Joatzel, Getafe, Madrid.
+<h1 align="center">🔹🔷 VGameShop 🔷🔹</h1>
 
-Developed by:
-- [Daniel Rodríguez Muñoz](https://github.com/Idliketobealoli)
-- [Marina Guanghua Pintado Guerrero](https://github.com/darkhuo10)
+<p align="center">This is the final project for the Web Application Development course at IES Laguna de Joatzel, Getafe, Madrid.</p>
 
 ---
 
@@ -11,23 +8,17 @@ The project consists of a ficticious game store, on which users can log in, sear
 
 There are other users (administrators) that can create games; adding their title, description, developer, publisher, release date, images to showcase and a file that will be the one that users download after "buying" the game.
 
----
+> This is the repository for the back-end of the application. For the front-end, visit [this repository](https://github.com/darkhuo10/DAW2-TFC-Angular).
 
-This is the repository for the back-end of the application. For the front-end, visit [this repository](https://github.com/darkhuo10/DAW2-TFC-Angular).
-
----
-
-## Technologies:
+<h2 align="center">🔹 Technologies:</h2>
 
 <div align="center">
-  <img name="python" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/935px-Python-logo-notext.svg.png" height="100"></img>
-  <img name="fastapi" src="https://cdn.worldvectorlogo.com/logos/fastapi.svg" height="100"></img>
-  <img name="mongoDB" src="https://cdn.worldvectorlogo.com/logos/mongodb-icon-2.svg" height="100"></img>
+  <a href="https://devdocs.io/python~3.12/"><img name="python" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/935px-Python-logo-notext.svg.png" height="100"></img></a>
+  <a hreft="https://devdocs.io/fastapi/"><img name="fastapi" src="https://cdn.worldvectorlogo.com/logos/fastapi.svg" height="100"></img></a>
+  <a href="https://www.mongodb.com/docs/"><img name="mongoDB" src="https://cdn.worldvectorlogo.com/logos/mongodb-icon-2.svg" height="100"></img></a>
 </div>
 
----
-
-## Endpoints:
+<h2 align="center">🔹 Endpoints:</h2>
 
 _GROUP_  | _NAME_                 | _VERB_ | _ENDPOINT_                       | _ADDITIONAL PARAMS_                                                                               | _DESCRIPTION_
 ---------|------------------------|--------|----------------------------------|---------------------------------------------------------------------------------------------------|------------------------------------------------------------------
@@ -70,9 +61,12 @@ WISHLIST | Add Game               | PUT    | /wishlists/add_game/{id}         | 
 WISHLIST | Remove Game            | PUT    | /wishlists/remove_game/{id}      | REQUIRED: game_id (str)                                                                           | Adds the game with the given game_id to the wishlist with the given ID.
 WISHLIST | Delete Library         | DELETE | /wishlists/{id}                  |                                                                                                   | Deletes the wishlist associated with the given ID. (CAMBIAR ESTO A UN BORRADO LÓGICO, LO MISMO PARA USUARIO Y LIBRARY)
 
----
+<h2 align="center">🔹 Developed by:</h2>
 
-
+<div align="center">
+  <a href="https://github.com/Idliketobealoli"><img name="Daniel Rodriguez" src="https://avatars.githubusercontent.com/u/80858419?v=4" height="150"></a>
+  <a href="https://github.com/darkhuo10"><img name="Marina Pintado" src="https://avatars.githubusercontent.com/u/105634828?v=4" height="150" ></a>
+</div>
 
 
 
