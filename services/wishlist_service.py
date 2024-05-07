@@ -1,6 +1,6 @@
 from typing import List, Optional
 from bson import ObjectId
-from dto.wishlist_dto import WishlistDto, WishlistDtoCreate
+from dto.wishlist_dto import WishlistDto
 from repositories.wishlist_repository import WishlistRepository
 from services.game_service import GameService
 from services.user_service import UserService

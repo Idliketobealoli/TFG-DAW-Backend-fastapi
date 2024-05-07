@@ -60,11 +60,11 @@ class GameDtoCreate(BaseModel):
 
         if len(cls.developer) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Developer name must be longer than 4 character: {cls.developer}")
+                                detail=f"Developer name must be longer than 4 characters: {cls.developer}")
 
         if len(cls.publisher) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Publisher name must be longer than 4 character: {cls.publisher}")
+                                detail=f"Publisher name must be longer than 4 characters: {cls.publisher}")
 
         if len(cls.genres) < 1:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -76,7 +76,7 @@ class GameDtoCreate(BaseModel):
 
         if len(cls.description) < 10:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Description must be longer than 9 character: {cls.description}")
+                                detail=f"Description must be longer than 9 characters: {cls.description}")
 
         if cls.release_date > datetime.datetime.today:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -119,11 +119,11 @@ class GameDtoUpdate(BaseModel):
 
         if cls.developer is not None and len(cls.developer) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Developer name must be longer than 4 character: {cls.developer}")
+                                detail=f"Developer name must be longer than 4 characters: {cls.developer}")
 
         if cls.publisher is not None and len(cls.publisher) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Publisher name must be longer than 4 character: {cls.publisher}")
+                                detail=f"Publisher name must be longer than 4 characters: {cls.publisher}")
 
         if cls.genres is not None and len(cls.genres) < 1:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -135,7 +135,7 @@ class GameDtoUpdate(BaseModel):
 
         if cls.description is not None and len(cls.description) < 10:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Description must be longer than 9 character: {cls.description}")
+                                detail=f"Description must be longer than 9 characters: {cls.description}")
         return
 
     @classmethod

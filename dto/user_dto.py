@@ -59,11 +59,11 @@ class UserDtoCreate(BaseModel):
 
         if len(cls.surname) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Surname must be longer than 4 character: {cls.surname}")
+                                detail=f"Surname must be longer than 4 characters: {cls.surname}")
 
         if len(cls.username) < 4:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Username must be longer than 3 character: {cls.username}")
+                                detail=f"Username must be longer than 3 characters: {cls.username}")
 
         if cls.repeatPassword != cls.password:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,

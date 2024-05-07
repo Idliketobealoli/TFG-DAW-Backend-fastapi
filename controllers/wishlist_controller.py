@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Query
 from services.wishlist_service import WishlistService
-from dto.wishlist_dto import WishlistDtoCreate
 from bson import ObjectId
 
 

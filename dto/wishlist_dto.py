@@ -1,4 +1,3 @@
-from bson import ObjectId
 from pydantic import BaseModel
 from typing import Set
 from model.wishlist import Wishlist
@@ -24,17 +23,3 @@ class WishlistDto(BaseModel):
             user=await user_service.get_user_by_id(wishlist.id),
             games=game_set
         )
-
-
-class WishlistDtoCreate(BaseModel):
-    user_id: ObjectId
-
-    @classmethod
-    def to_wishlist(cls):
-        return Wishlist(
-            id=cls.user_id,
-            game_ids=set()
-        )
-
-    class Config:
-        arbitrary_types_allowed = True
