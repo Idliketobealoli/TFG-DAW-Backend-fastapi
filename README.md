@@ -22,6 +22,7 @@ There are other users (administrators) that can create games; adding their title
 
 _GROUP_  | _NAME_                 | _VERB_ | _ENDPOINT_                       | _ADDITIONAL PARAMS_                                                                               | _DESCRIPTION_
 ---------|------------------------|--------|----------------------------------|---------------------------------------------------------------------------------------------------|------------------------------------------------------------------
+SWAGGER  | Swagger documentation  | GET    | /docs                            |                                                                                                   | Swagger documentation for the endpoints.
 PRUEBA   | Prueba                 | GET    | /prueba                          |                                                                                                   | Endpoint for testing if the connection with the server works.
 GAMES    | Get All                | GET    | /games                           | OPTIONAL: genre (str), language (str), name (str), publisher (str), developer (str), rating (str) | Finds all games. If there are any parameters, it filters by them.
 GAMES    | Get By ID              | GET    | /games/{id}                      |                                                                                                   | Finds a game by the given ID, if it exists.
