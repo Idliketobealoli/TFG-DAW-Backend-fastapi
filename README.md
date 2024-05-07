@@ -10,7 +10,7 @@ There are other users (administrators) that can create games; adding their title
 
 > This is the repository for the back-end of the application. For the front-end, visit [this repository](https://github.com/darkhuo10/DAW2-TFC-Angular).
 
-<h2 align="center">🔹 Technologies:</h2>
+<h2 align="center">🔹 Technologies: 🔹</h2>
 
 <div align="center">
   <a href="https://devdocs.io/python~3.12/"><img name="python" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/935px-Python-logo-notext.svg.png" height="100"></img></a>
@@ -18,7 +18,7 @@ There are other users (administrators) that can create games; adding their title
   <a href="https://www.mongodb.com/docs/"><img name="mongoDB" src="https://cdn.worldvectorlogo.com/logos/mongodb-icon-2.svg" height="100"></img></a>
 </div>
 
-<h2 align="center">🔹 Endpoints:</h2>
+<h2 align="center">🔹 Endpoints: 🔹</h2>
 
 _GROUP_  | _NAME_                 | _VERB_ | _ENDPOINT_                       | _ADDITIONAL PARAMS_                                                                               | _DESCRIPTION_
 ---------|------------------------|--------|----------------------------------|---------------------------------------------------------------------------------------------------|------------------------------------------------------------------
@@ -55,7 +55,7 @@ WISHLIST | Get By ID              | GET    | /wishlists/{id}                  | 
 WISHLIST | Add Game               | PUT    | /wishlists/add_game/{id}         | REQUIRED: game_id (str)                                                                           | Adds the game with the given game_id to the wishlist with the given ID.
 WISHLIST | Remove Game            | PUT    | /wishlists/remove_game/{id}      | REQUIRED: game_id (str)                                                                           | Removes the game with the given game_id from the wishlist with the given ID.
 
-<h2 align="center">🔹 Developed by:</h2>
+<h2 align="center">🔹 Developed by: 🔹</h2>
 
 <div align="center">
   <a href="https://github.com/Idliketobealoli"><img name="Daniel Rodriguez" src="https://avatars.githubusercontent.com/u/80858419?v=4" height="150"></a>
