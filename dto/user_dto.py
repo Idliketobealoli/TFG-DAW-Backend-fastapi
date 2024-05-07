@@ -16,6 +16,7 @@ class UserDto(BaseModel):
     birthdate: SkipValidation[datetime]
     role: Role
     profile_picture: Optional[str] = None
+    active: bool
 
     @classmethod
     def from_user(cls, user: User):
@@ -27,7 +28,8 @@ class UserDto(BaseModel):
             email=user.email,
             birthdate=user.birthdate,
             role=user.role,
-            profile_picture=user.profile_picture
+            profile_picture=user.profile_picture,
+            active=user.active
         )
 
     class Config:

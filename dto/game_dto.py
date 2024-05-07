@@ -19,6 +19,7 @@ class GameDto(BaseModel):
     sell_number: int
     main_image: Optional[str] = None
     game_showcase_images: Set[str]
+    visible: bool
 
     @classmethod
     def from_game(cls, game: Game):
@@ -34,7 +35,8 @@ class GameDto(BaseModel):
             release_date=game.release_date,
             sell_number=game.sell_number,
             main_image=game.main_image,
-            game_showcase_images=game.game_showcase_images
+            game_showcase_images=game.game_showcase_images,
+            visible=game.visible
         )
 
     class Config:
@@ -93,7 +95,8 @@ class GameDtoCreate(BaseModel):
             rating=0,
             description=cls.description,
             release_date=cls.release_date,
-            sell_number=0
+            sell_number=0,
+            visible=True
         )
 
     class Config:
@@ -160,5 +163,6 @@ class GameDtoUpdate(BaseModel):
             rating=game.rating,
             description=cls.description,
             release_date=game.release_date,
-            sell_number=game.sell_number
+            sell_number=game.sell_number,
+            visible=game.visible
         )

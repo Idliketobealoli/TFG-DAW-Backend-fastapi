@@ -53,7 +53,7 @@ class GameService:
         updated_game = await self.game_repository.update_game(game_id, game.dict())
         if not updated_game:
             return None
-        return GameDto.from_user(updated_game)
+        return GameDto.from_game(updated_game)
     
     async def upload_showcase_images(self, game_id: ObjectId, files: Set[UploadFile]):
         game = await self.game_repository.get_game_by_id(game_id)
@@ -86,8 +86,12 @@ class GameService:
         updated_game = await self.game_repository.update_game(game_id, game.dict())
         return updated_game is not None
 
-    async def delete_game(self, game_id: ObjectId) -> bool:
+    async def delete_game(self, game_id: ObjectId) -> Optional[GameDto]:
         game = await self.get_game_by_id(game_id)
         if not game:
-            return False
-        return await self.game_repository.delete_game(game_id)
+            return None
+        deleted_game = await self.game_repository.delete_game(game_id)
+        if not deleted_game:
+            return None
+        return GameDto.from_game(deleted_game)
+        # return await self.game_repository.delete_game(game_id)

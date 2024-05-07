@@ -27,11 +27,19 @@ class UserRepository:
         return await self.get_user_by_id(user.id)
 
     async def update_user(self, user_id: ObjectId, user_data: dict) -> Optional[User]:
-        user = await self.collection.find_one({"id": user_id})
-        await self.collection.update_one({"_id": user.pop('_id', None)}, {"$set": user_data})
+        user = await self.get_user_by_id(user_id)
+        if not user:
+            return None
+        await self.collection.update_one({"id": user.pop('id', None)}, {"$set": user_data}) # Si no funciona, ver gamerepository
         return await self.get_user_by_id(user_id)
 
-    async def delete_user(self, user_id: ObjectId) -> bool:
-        await self.collection.delete_one({"id": user_id})
+    async def delete_user(self, user_id: ObjectId) -> Optional[User]:
         user = await self.get_user_by_id(user_id)
-        return user is None
+        if not user:
+            return None
+        user.active = False
+        await self.collection.update_one({"id": user.pop('id', None)}, {"$set": user}) # Lo mismo aqui
+        return await self.get_user_by_id(user_id)
+        # await self.collection.delete_one({"id": user_id})
+        # user = await self.get_user_by_id(user_id)
+        # return user is None

@@ -23,11 +23,19 @@ class GameRepository:
         return await self.get_game_by_id(game.id)
 
     async def update_game(self, game_id: ObjectId, game_data: dict) -> Optional[Game]:
-        game = await self.collection.find_one({"id": game_id})
-        await self.collection.update_one({"_id": game.pop('_id', None)}, {"$set": game_data})
+        game = await self.get_game_by_id(game_id)
+        if not game:
+            return None
+        await self.collection.update_one({"id": game.pop('id', None)}, {"$set": game_data}) # Si no funciona, cambiar por _id
         return await self.get_game_by_id(game_id)
 
-    async def delete_game(self, game_id: ObjectId) -> bool:
-        await self.collection.delete_one({"id": game_id})
+    async def delete_game(self, game_id: ObjectId) -> Optional[Game]:
         game = await self.get_game_by_id(game_id)
-        return game is None
+        if not game:
+            return None
+        game.visible = False
+        await self.collection.update_one({"id": game.pop('id', None)}, {"$set": game}) # Lo mismo aqui
+        return await self.get_game_by_id(game_id)
+        # await self.collection.delete_one({"id": game_id})
+        # game = await self.get_game_by_id(game_id)
+        # return game is None
