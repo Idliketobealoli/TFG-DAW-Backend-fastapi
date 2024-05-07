@@ -52,11 +52,13 @@ async def get_reviews_from_game(game_id_str: str):
 
 @review_routes.post("/reviews/")
 async def post_review(review: ReviewDtoCreate):
+    review.validate_fields()
     return await review_service.create_review(review)
 
 
 @review_routes.put("/reviews/{review_id_str}")
 async def put_review(review_id_str: str, review: ReviewDtoUpdate):
+    review.validate_fields()
     return await review_service.update_review(ObjectId(review_id_str), review)
 
 
