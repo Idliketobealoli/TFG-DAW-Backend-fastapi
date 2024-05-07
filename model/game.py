@@ -57,6 +57,7 @@ class Game(BaseModel):
     sell_number: int
     main_image: Optional[str] = None
     game_showcase_images: [str]
+    # file: [str]
     visible: bool
 
     class Config:

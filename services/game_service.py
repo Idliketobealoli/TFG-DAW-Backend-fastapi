@@ -65,18 +65,37 @@ class GameService:
                                     detail="Uploaded file is not an image.")
             image_data = await file.read()
             _, extension = os.path.splitext(file.filename)
-            save_path = os.path.join("..", "resources", "game_images", f"{game_id}-img{ObjectId()}.{extension}")
+            name = f"{game_id}-img{ObjectId()}.{extension}"
+            save_path = os.path.join("..", "resources", "game_images", name)
 
             async with aiofiles.open(save_path, "wb") as image_file:
                 await image_file.write(image_data)
 
             game.game_showcase_images.add(
-                os.path.join("resources", "game_images", f"{game_id}-img{ObjectId()}.{extension}"))
+                os.path.join("resources", "game_images", name))
 
         updated_game = await self.game_repository.update_game(game_id, game.dict())
         if not updated_game:
             return None
         return GameDto.from_game(updated_game)
+    
+    async def upload_game_file(self, game_id: ObjectId, file: UploadFile):
+        game = await self.game_repository.get_game_by_id(game_id)
+        if not game:
+            return None
+        file_data = await file.read()
+        _, extension = os.path.splitext(file.filename)
+        save_path = os.path.join("..", "resources", "game_files", f"{game.name}.{extension}")
+
+        async with aiofiles.open(save_path, "wb") as game_file:
+            await game_file.write(file_data)
+
+        # game.file = os.path.join("resources", "game_files", f"{game.name}.{extension}")
+        updated_game = await self.game_repository.update_game(game_id, game.dict())
+        if not updated_game:
+            return None
+        return None # CONTINUAR EN CASA. QUIERO MIRAR TAMBIEN COMO SACAR DE VERDAD LAS IMAGENES, PORQUE DE LA FORMA ACTUAL NO DEBERIA DE FUNCIONAR
+    # EN PLAN, DEBERIA GUARDARLAS BIEN PERO PARA MOSTRARLAS NO.
 
     async def clear_showcase_images(self, game_id: ObjectId) -> bool:
         game = await self.get_game_by_id(game_id)
@@ -95,3 +114,9 @@ class GameService:
             return None
         return GameDto.from_game(deleted_game)
         # return await self.game_repository.delete_game(game_id)
+
+    async def get_download(self, game_id: ObjectId): # -> Optional[]:
+        game = await self.get_game_by_id(game_id)
+        if not game:
+            return None
+        
