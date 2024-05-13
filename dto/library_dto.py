@@ -1,4 +1,3 @@
-from bson import ObjectId
 from pydantic import BaseModel
 from typing import Set
 from model.library import Library
@@ -9,7 +8,6 @@ from services.user_service import UserService
 
 
 class LibraryDto(BaseModel):
-    id: str
     user: UserDto
     games: Set[GameDto]
 
@@ -22,23 +20,7 @@ class LibraryDto(BaseModel):
                 game_set.add(game_to_add)
 
         return LibraryDto(
-            id=str(library.id),
-            user=await user_service.get_user_by_id(library.user_id),
+            user=await user_service.get_user_by_id(library.id),
             games=game_set
-        )
-
-
-class LibraryDtoCreate(BaseModel):
-    user_id: ObjectId
-
-    class Config:
-        arbitrary_types_allowed = True
-
-    @classmethod
-    def to_library(cls):
-        return Library(
-            id=ObjectId(),
-            user_id=cls.user_id,
-            game_ids=set()
         )
     

@@ -29,11 +29,13 @@ async def get_user_by_id(user_id_str: str):
 
 @user_routes.post("/users/")
 async def post_user(user: UserDtoCreate):
+    user.validate_fields()
     return await user_service.create_user(user)
 
 
 @user_routes.put("/users/{user_id_str}")
 async def put_user(user_id_str: str, user: UserDtoUpdate):
+    user.validate_fields()
     return await user_service.update_user(ObjectId(user_id_str), user)
 
 

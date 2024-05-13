@@ -35,8 +35,6 @@ app.include_router(library_routes)
 async def load_initial_data():
     await db.init_database()
     await asyncio.gather(load_users(), load_games())
-    # load_users()
-    # load_games()
 
 
 async def load_users():
@@ -56,8 +54,6 @@ async def load_users():
     user_repository = UserRepository()
 
     await asyncio.gather(*[user_repository.create_user(user) for user in initial_users])
-    # for user in initial_users: BORRAR ESTO SI INSERTA BIEN LOS USUARIOS, YA QUE ESO HACE EL GATHER
-    #     await user_repository.create_user(user)
 
 
 async def load_games():
@@ -89,8 +85,6 @@ async def load_games():
     game_repository = GameRepository()
 
     await asyncio.gather(*[game_repository.create_game(game) for game in initial_games])
-    # for game in initial_games:
-    #     await game_repository.create_game(game)
 
 
 if __name__ == '__main__':

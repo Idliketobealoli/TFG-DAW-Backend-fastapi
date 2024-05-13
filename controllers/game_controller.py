@@ -48,11 +48,13 @@ async def get_game_by_id(game_id_str: str):
 
 @game_routes.post("/games/")
 async def post_game(game: GameDtoCreate):
+    game.validate_fields()
     return await game_service.create_game(game)
 
 
 @game_routes.put("/games/{game_id_str}")
 async def put_game(game_id_str: str, game: GameDtoUpdate):
+    game.validate_fields()
     return await game_service.update_game(ObjectId(game_id_str), game)
 
 
@@ -74,3 +76,7 @@ async def clear_game_showcases(game_id_str: str):
 @game_routes.delete("/games/{game_id_str}")
 async def delete_game_by_id(game_id_str: str):
     return await game_service.delete_game(ObjectId(game_id_str))
+
+# @game_routes.get("/games/download/{game_id_str}")
+# async def download_game_by_id(game_id_str: str):
+#    return await game_service.get_download(ObjectId(game_id_str))

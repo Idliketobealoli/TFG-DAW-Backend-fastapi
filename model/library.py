@@ -5,7 +5,6 @@ from typing import Set
 
 class Library(BaseModel):
     id: ObjectId
-    user_id: ObjectId
     game_ids: Set[ObjectId]
 
     @classmethod

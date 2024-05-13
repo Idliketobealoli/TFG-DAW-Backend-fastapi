@@ -36,7 +36,6 @@ class ReviewDto(BaseModel):
 class ReviewDtoCreate(BaseModel):
     game_id: ObjectId
     user_id: ObjectId
-    publish_date: SkipValidation[datetime]
     rating: float
     description: str
 
@@ -45,10 +44,6 @@ class ReviewDtoCreate(BaseModel):
 
     @classmethod
     def validate_fields(cls):
-        if cls.publish_date > datetime.datetime.today:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Publish date must not be in the future.")
-        
         if cls.rating > 5:
             cls.rating = 5
         elif cls.rating < 0:
@@ -56,7 +51,7 @@ class ReviewDtoCreate(BaseModel):
         
         if len(cls.description) < 10:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Description must be longer than 9 character: {cls.description}")
+                                detail=f"Description must be longer than 9 characters: {cls.description}")
         return
 
     @classmethod
@@ -65,7 +60,7 @@ class ReviewDtoCreate(BaseModel):
             id=ObjectId(),
             game_id=cls.game_id,
             user_id=cls.user_id,
-            publish_date=cls.publish_date,
+            publish_date=datetime.datetime.now(),
             rating=cls.rating,
             description=cls.description
         )
@@ -85,7 +80,7 @@ class ReviewDtoUpdate(BaseModel):
 
         if cls.description is not None and len(cls.description) < 10:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Description must be longer than 9 character: {cls.description}")
+                                detail=f"Description must be longer than 9 characters: {cls.description}")
         return
     
     @classmethod

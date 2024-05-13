@@ -1,6 +1,6 @@
 from typing import List, Optional
 from bson import ObjectId
-from dto.wishlist_dto import WishlistDto, WishlistDtoCreate
+from dto.wishlist_dto import WishlistDto
 from repositories.wishlist_repository import WishlistRepository
 from services.game_service import GameService
 from services.user_service import UserService
@@ -18,18 +18,6 @@ class WishlistService:
 
     async def get_wishlist_by_id(self, wishlist_id: ObjectId) -> Optional[WishlistDto]:
         wishlist = await self.wishlist_repository.get_wishlist_by_id(wishlist_id)
-        if not wishlist:
-            return None
-        return await WishlistDto.from_wishlist(wishlist, self.user_service, self.game_service)
-    
-    async def get_wishlist_by_user_id(self, user_id: ObjectId) -> Optional[WishlistDto]:
-        wishlist = await self.wishlist_repository.get_wishlist_by_user_id(user_id)
-        if not wishlist:
-            return None
-        return await WishlistDto.from_wishlist(wishlist, self.user_service, self.game_service)
-
-    async def create_wishlist(self, wishlist_dto: WishlistDtoCreate) -> Optional[WishlistDto]:
-        wishlist = await self.wishlist_repository.create_wishlist(wishlist_dto.to_wishlist())
         if not wishlist:
             return None
         return await WishlistDto.from_wishlist(wishlist, self.user_service, self.game_service)
@@ -54,8 +42,8 @@ class WishlistService:
             return None
         return await WishlistDto.from_wishlist(updated_wishlist, self.user_service, self.game_service)
 
-    async def delete_wishlist(self, wishlist_id: ObjectId) -> bool:
-        wishlist = await self.get_wishlist_by_id(wishlist_id)
-        if not wishlist:
-            return False
-        return await self.wishlist_repository.delete_wishlist(wishlist_id)
+    # async def delete_wishlist(self, wishlist_id: ObjectId) -> bool:
+    #    wishlist = await self.get_wishlist_by_id(wishlist_id)
+    #    if not wishlist:
+    #        return False
+    #    return await self.wishlist_repository.delete_wishlist(wishlist_id)

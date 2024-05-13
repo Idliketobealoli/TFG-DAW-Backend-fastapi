@@ -4,11 +4,15 @@ import aiofiles
 from bson import ObjectId
 from fastapi import UploadFile, HTTPException, status
 from dto.user_dto import UserDto, UserDtoCreate, UserDtoUpdate
+from repositories.library_repository import LibraryRepository
 from repositories.user_repository import UserRepository
+from repositories.wishlist_repository import WishlistRepository
 
 
 class UserService:
     user_repository = UserRepository()
+    library_repository = LibraryRepository()
+    wishlist_repository = WishlistRepository()
 
     async def get_all_users(self) -> List[UserDto]:
         users = await self.user_repository.get_users()
@@ -28,6 +32,8 @@ class UserService:
         user = await self.user_repository.create_user(user_dto.to_user())
         if not user:
             return None
+        await self.library_repository.create_library(user.id)
+        await self.wishlist_repository.create_wishlist(user.id)
         return UserDto.from_user(user)
 
     async def update_user(self, user_id: ObjectId, user_dto: UserDtoUpdate) -> Optional[UserDto]:
@@ -65,8 +71,12 @@ class UserService:
         #    return None
         # return UserDto.from_user(updated_user)
 
-    async def delete_user(self, user_id: ObjectId) -> bool:
+    async def delete_user(self, user_id: ObjectId) -> Optional[UserDto]:
         user = await self.get_user_by_id(user_id)
         if not user:
             return False
-        return await self.user_repository.delete_user(user_id)
+        deleted_user = await self.user_repository.delete_user(user_id)
+        if not deleted_user:
+            return None
+        return UserDto.from_user(deleted_user)
+        # return await self.user_repository.delete_user(user_id)
