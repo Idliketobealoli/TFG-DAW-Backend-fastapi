@@ -1,9 +1,10 @@
-from bson import ObjectId
 from pydantic import BaseModel, SkipValidation
 from fastapi import HTTPException, status
 import datetime
 from typing import Set, Optional
 from model.game import Genre, Language, Game
+from repositories.game_repository import get_game_image_by_name, get_showcase_images_by_names
+from repositories.review_repository import ReviewRepository
 
 
 class GameDto(BaseModel):
@@ -17,12 +18,18 @@ class GameDto(BaseModel):
     description: str
     release_date: SkipValidation[datetime]
     sell_number: int
-    main_image: Optional[str] = None
-    game_showcase_images: Set[str]
+    main_image: bytes
+    game_showcase_images: Set[bytes]
     visible: bool
 
     @classmethod
-    def from_game(cls, game: Game):
+    async def from_game(cls, game: Game, review_repository: ReviewRepository):
+        reviews = await review_repository.get_reviews_from_game(game.id)
+        rating = 0
+
+        if reviews:
+            rating = round(sum(review.rating for review in reviews) / len(reviews), 2)
+
         return GameDto(
             id=str(game.id),
             name=game.name,
@@ -30,12 +37,12 @@ class GameDto(BaseModel):
             publisher=game.publisher,
             genres=game.genres,
             languages=game.languages,
-            rating=game.rating,
+            rating=rating,
             description=game.description,
             release_date=game.release_date,
             sell_number=game.sell_number,
-            main_image=game.main_image,
-            game_showcase_images=game.game_showcase_images,
+            main_image=await get_game_image_by_name(game.main_image),
+            game_showcase_images=await get_showcase_images_by_names(game.game_showcase_images),
             visible=game.visible
         )
 
@@ -86,17 +93,13 @@ class GameDtoCreate(BaseModel):
     @classmethod
     def to_game(cls):
         return Game(
-            id=ObjectId(),
             name=cls.name,
             developer=cls.developer,
             publisher=cls.publisher,
             genres=cls.genres,
             languages=cls.languages,
-            rating=0,
             description=cls.description,
-            release_date=cls.release_date,
-            sell_number=0,
-            visible=True
+            release_date=cls.release_date
         )
 
     class Config:
@@ -160,9 +163,10 @@ class GameDtoUpdate(BaseModel):
             publisher=cls.publisher,
             genres=cls.genres,
             languages=cls.languages,
-            rating=game.rating,
             description=cls.description,
             release_date=game.release_date,
             sell_number=game.sell_number,
+            main_image=game.main_image,
+            game_showcase_images=game.game_showcase_images,
             visible=game.visible
         )

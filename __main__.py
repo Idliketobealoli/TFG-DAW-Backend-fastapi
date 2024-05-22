@@ -1,5 +1,4 @@
 import uvicorn
-from bson import ObjectId
 from fastapi import FastAPI
 from controllers.user_controller import user_routes
 from controllers.game_controller import game_routes
@@ -39,16 +38,16 @@ async def load_initial_data():
 
 async def load_users():
     initial_users = [
-        User(id=ObjectId(), name="Marina Guanghua", surname="Pintado", username="darkhuo10", email="admin1@gmail.com",
-             password="admin1234", birthdate=datetime.datetime(2003, 12, 10), role=Role.ADMIN, active=True),
-        User(id=ObjectId(), name="Daniel", surname="Rodríguez", username="Idliketobealoli", email="admin2@gmail.com",
-             password="loli1707", birthdate=datetime.datetime(2002, 5, 26), role=Role.ADMIN, active=True),
-        User(id=ObjectId(), name="User 1", surname="Apellido", username="usuario1", email="user1@gmail.com",
-             password="password1", birthdate=datetime.datetime(2002, 5, 26), role=Role.USER, active=True),
-        User(id=ObjectId(), name="User 2", surname="Apellido 2", username="usuario2", email="user2@gmail.com",
-             password="password2", birthdate=datetime.datetime(2002, 5, 26), role=Role.USER, active=True),
-        User(id=ObjectId(), name="User 3", surname="Apellido 3", username="usuario3", email="user4@gmail.com",
-             password="password4", birthdate=datetime.datetime(2002, 5, 26), role=Role.USER, active=True)
+        User(name="Marina Guanghua", surname="Pintado", username="darkhuo10", email="admin1@gmail.com",
+             password="admin1234", birthdate=datetime.datetime(2003, 12, 10), role=Role.ADMIN),
+        User(name="Daniel", surname="Rodríguez", username="Idliketobealoli", email="admin2@gmail.com",
+             password="loli1707", birthdate=datetime.datetime(2002, 5, 26), role=Role.ADMIN),
+        User(name="User 1", surname="Apellido", username="usuario1", email="user1@gmail.com",
+             password="password1", birthdate=datetime.datetime(2002, 5, 26)),
+        User(name="User 2", surname="Apellido 2", username="usuario2", email="user2@gmail.com",
+             password="password2", birthdate=datetime.datetime(2002, 5, 26)),
+        User(name="User 3", surname="Apellido 3", username="usuario3", email="user4@gmail.com",
+             password="password4", birthdate=datetime.datetime(2002, 5, 26))
     ]
 
     user_repository = UserRepository()
@@ -58,28 +57,25 @@ async def load_users():
 
 async def load_games():
     initial_games = [
-        Game(id=ObjectId(), name="Dark Souls", developer="From Software", publisher="From Software",
+        Game(name="Dark Souls", developer="From Software", publisher="From Software",
              genres=[genre for genre in {Genre.ARPG, Genre.SOULSLIKE, Genre.SINGLEPLAYER, Genre.MULTIPLAYER}],
              languages=[language for language in {Language.EN, Language.ES, Language.JP, Language.GM}],
-             rating=4.9, description="Es Dark Souls, ¿de verdad necesitas leer la descripción de este juego?",
-             release_date=datetime.datetime(2011, 9, 22), sell_number=35_000_000,
-             game_showcase_images=[]),
+             description="Es Dark Souls, ¿de verdad necesitas leer la descripción de este juego?",
+             release_date=datetime.datetime(2011, 9, 22), sell_number=35_000_000),
 
-        Game(id=ObjectId(), name="Portal", developer="Valve", publisher="Valve",
+        Game(name="Portal", developer="Valve", publisher="Valve",
              genres=[genre for genre in {Genre.PUZZLE, Genre.PLATFORMER, Genre.SINGLEPLAYER, Genre.MULTIPLAYER}],
              languages=[language for language in {Language.EN, Language.ES, Language.JP, Language.KR, Language.FR}],
-             rating=4.1, description="Estás en un laboratorio siendo el sujeto de pruebas de una IA llamada GlaDOS, "
-                                     "pero tienes una pistola de portales. Podrás escapar?",
-             release_date=datetime.datetime(2007, 10, 9), sell_number=4_000_000,
-             game_showcase_images=[]),
+             description="Estás en un laboratorio siendo el sujeto de pruebas de una IA llamada GlaDOS, " +
+                         "pero tienes una pistola de portales. Podrás escapar?",
+             release_date=datetime.datetime(2007, 10, 9), sell_number=4_000_000),
 
-        Game(id=ObjectId(), name="Ratchet & Clank", developer="Insomniac Games", publisher="Sony",
+        Game(name="Ratchet & Clank", developer="Insomniac Games", publisher="Sony",
              genres=[genre for genre in {Genre.RPG, Genre.PUZZLE, Genre.PLATFORMER, Genre.CASUAL,
                                          Genre.TPS, Genre.SINGLEPLAYER}],
              languages=[language for language in {Language.EN, Language.ES, Language.JP, Language.RU, Language.CN}],
-             rating=4.5, description="Es literalmente el juego de mi infancia. Cómpralo.",
-             release_date=datetime.datetime(2002, 11, 8), sell_number=4_008_499,
-             game_showcase_images=[])
+             description="Es literalmente el juego de mi infancia. Cómpralo.",
+             release_date=datetime.datetime(2002, 11, 8), sell_number=4_008_499)
     ]
 
     game_repository = GameRepository()

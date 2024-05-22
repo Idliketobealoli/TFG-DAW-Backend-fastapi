@@ -1,8 +1,7 @@
 from enum import Enum
-from pydantic import BaseModel, SkipValidation
+from pydantic import BaseModel, SkipValidation, Field
 from bson import ObjectId
 import datetime
-from typing import Optional
 
 
 class Genre(str, Enum):
@@ -45,20 +44,19 @@ class Language(str, Enum):
 
 
 class Game(BaseModel):
-    id: ObjectId
+    id: ObjectId = Field(default=ObjectId())
     name: str
     developer: str
     publisher: str
     genres: [Genre]
     languages: [Language]
-    rating: float
     description: str
-    release_date: SkipValidation[datetime]
-    sell_number: int
-    main_image: Optional[str] = None
-    game_showcase_images: [str]
+    release_date: SkipValidation[datetime] = Field(default=datetime.datetime.now())
+    sell_number: int = Field(default=0)
+    main_image: str = Field(default="base_game_icon.png")
+    game_showcase_images: [str] = Field(default=[])
     # file: [str]
-    visible: bool
+    visible: bool = Field(default=True)
 
     class Config:
         arbitrary_types_allowed = True

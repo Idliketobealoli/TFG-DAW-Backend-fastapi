@@ -3,27 +3,27 @@ from pydantic import BaseModel, SkipValidation
 from fastapi import HTTPException, status
 import datetime
 from model.review import Review
-from dto.game_dto import GameDto
-from dto.user_dto import UserDto
-from services.game_service import GameService
-from services.user_service import UserService
+from repositories.game_repository import GameRepository
+from repositories.user_repository import UserRepository
 from typing import Optional
 
 
 class ReviewDto(BaseModel):
     id: str
-    game: GameDto
-    user: UserDto
+    game: str
+    user: str
     publish_date: SkipValidation[datetime]
     rating: float
     description: str
 
     @classmethod
-    async def from_review(cls, review: Review, user_service: UserService, game_service: GameService):
+    async def from_review(cls, review: Review, user_repository: UserRepository, game_repository: GameRepository):
+        game_model = await game_repository.get_game_by_id(review.game_id)
+        user_model = await user_repository.get_user_by_id(review.user_id)
         return ReviewDto(
             id=str(review.id),
-            game=await game_service.get_game_by_id(review.game_id),
-            user=await user_service.get_user_by_id(review.user_id),
+            game=game_model.name,
+            user=user_model.username,
             publish_date=review.publish_date,
             rating=review.rating,
             description=review.description
@@ -48,7 +48,7 @@ class ReviewDtoCreate(BaseModel):
             cls.rating = 5
         elif cls.rating < 0:
             cls.rating = 0
-        
+
         if len(cls.description) < 10:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Description must be longer than 9 characters: {cls.description}")
@@ -57,10 +57,8 @@ class ReviewDtoCreate(BaseModel):
     @classmethod
     def to_review(cls):
         return Review(
-            id=ObjectId(),
             game_id=cls.game_id,
             user_id=cls.user_id,
-            publish_date=datetime.datetime.now(),
             rating=cls.rating,
             description=cls.description
         )
@@ -82,20 +80,18 @@ class ReviewDtoUpdate(BaseModel):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Description must be longer than 9 characters: {cls.description}")
         return
-    
+
     @classmethod
     def to_review(cls, review: Review):
         if cls.rating is None:
             cls.rating = review.rating
         if cls.description is None:
             cls.description = review.description
-        
+
         return Review(
             id=review.id,
             game_id=review.game_id,
             user_id=review.user_id,
-            publish_date=datetime.datetime.now(),
             rating=cls.rating,
             description=cls.description
         )
-    

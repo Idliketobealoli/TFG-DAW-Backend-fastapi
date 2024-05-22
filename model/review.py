@@ -1,13 +1,13 @@
-from pydantic import BaseModel, SkipValidation
+from pydantic import BaseModel, SkipValidation, Field
 from bson import ObjectId
 import datetime
 
 
 class Review(BaseModel):
-    id: ObjectId
+    id: ObjectId = Field(default=ObjectId())
     game_id: ObjectId
     user_id: ObjectId
-    publish_date: SkipValidation[datetime]
+    publish_date: SkipValidation[datetime] = Field(default=datetime.datetime.now())
     rating: float
     description: str
 

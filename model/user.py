@@ -1,8 +1,7 @@
 from enum import Enum
-from pydantic import BaseModel, EmailStr, SkipValidation
+from pydantic import BaseModel, EmailStr, SkipValidation, Field
 from bson import ObjectId
 import datetime
-from typing import Optional
 
 
 class Role(str, Enum):
@@ -11,16 +10,16 @@ class Role(str, Enum):
 
 
 class User(BaseModel):
-    id: ObjectId
+    id: ObjectId = Field(default=ObjectId())
     name: str
     surname: str
     username: str
     email: EmailStr
     password: str
     birthdate: SkipValidation[datetime]
-    role: Role
-    active: bool
-    profile_picture: Optional[str] = None
+    role: Role = Field(default=Role.USER)
+    active: bool = Field(default=True)
+    profile_picture: str = Field(default="base_user_pfp.png")
 
     class Config:
         arbitrary_types_allowed = True

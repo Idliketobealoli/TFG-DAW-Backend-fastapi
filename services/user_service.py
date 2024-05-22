@@ -16,17 +16,17 @@ class UserService:
 
     async def get_all_users(self) -> List[UserDto]:
         users = await self.user_repository.get_users()
-        return [UserDto.from_user(user) for user in users]
+        return [await UserDto.from_user(user) for user in users]
 
     async def get_all_users_active(self, active: bool) -> List[UserDto]:
         users = await self.user_repository.get_users_active(active)
-        return [UserDto.from_user(user) for user in users]
+        return [await UserDto.from_user(user) for user in users]
 
     async def get_user_by_id(self, user_id: ObjectId) -> Optional[UserDto]:
         user = await self.user_repository.get_user_by_id(user_id)
         if not user:
             return None
-        return UserDto.from_user(user)
+        return await UserDto.from_user(user)
 
     async def create_user(self, user_dto: UserDtoCreate) -> Optional[UserDto]:
         user = await self.user_repository.create_user(user_dto.to_user())
@@ -34,7 +34,7 @@ class UserService:
             return None
         await self.library_repository.create_library(user.id)
         await self.wishlist_repository.create_wishlist(user.id)
-        return UserDto.from_user(user)
+        return await UserDto.from_user(user)
 
     async def update_user(self, user_id: ObjectId, user_dto: UserDtoUpdate) -> Optional[UserDto]:
         user = await self.user_repository.get_user_by_id(user_id)
@@ -43,7 +43,7 @@ class UserService:
         updated_user = await self.user_repository.update_user(user_id, user_dto.to_user(user).dict())
         if not updated_user:
             return None
-        return UserDto.from_user(updated_user)
+        return await UserDto.from_user(updated_user)
 
     async def upload_profile_picture(self, user_id: ObjectId, file: UploadFile):
         user = await self.user_repository.get_user_by_id(user_id)
@@ -52,31 +52,19 @@ class UserService:
         if not file.content_type.startswith("image/"):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail="Uploaded file is not an image.")
-        image_data = await file.read()
-        _, extension = os.path.splitext(file.filename)
-        save_path = os.path.join("..", "resources", "user_pfp", f"{user_id}.{extension}")
 
-        async with aiofiles.open(save_path, "wb") as image_file:
-            await image_file.write(image_data)
+        await self.user_repository.upload_image_for_user(file, user_id)
 
-        user.profile_picture = os.path.join("resources", "user_pfp", f"{user_id}.{extension}")
-        updated_user = await self.user_repository.update_user(user_id, user.dict())
+        updated_user = await self.user_repository.get_user_by_id(user_id)
         if not updated_user:
             return None
-        return UserDto.from_user(updated_user)
-        # image_id = await db.upload_file(image_data)
-        # user.profile_picture = image_id
-        # updated_user = await self.user_repository.update_user(user_id, user.dict())
-        # if not updated_user:
-        #    return None
-        # return UserDto.from_user(updated_user)
+        return await UserDto.from_user(updated_user)
 
     async def delete_user(self, user_id: ObjectId) -> Optional[UserDto]:
         user = await self.get_user_by_id(user_id)
         if not user:
-            return False
+            return None
         deleted_user = await self.user_repository.delete_user(user_id)
         if not deleted_user:
             return None
-        return UserDto.from_user(deleted_user)
-        # return await self.user_repository.delete_user(user_id)
+        return await UserDto.from_user(deleted_user)
