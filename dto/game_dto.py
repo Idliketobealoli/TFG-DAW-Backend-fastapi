@@ -1,9 +1,9 @@
+from bson import ObjectId
 from pydantic import BaseModel, SkipValidation
 from fastapi import HTTPException, status
 import datetime
 from typing import Set, Optional
 from model.game import Genre, Language, Game
-from repositories.game_repository import get_game_image_by_name, get_showcase_images_by_names
 from repositories.review_repository import ReviewRepository
 
 
@@ -18,8 +18,7 @@ class GameDto(BaseModel):
     description: str
     release_date: SkipValidation[datetime]
     sell_number: int
-    main_image: bytes
-    game_showcase_images: Set[bytes]
+    game_showcase_images: Set[str]
     visible: bool
 
     @classmethod
@@ -41,8 +40,7 @@ class GameDto(BaseModel):
             description=game.description,
             release_date=game.release_date,
             sell_number=game.sell_number,
-            main_image=await get_game_image_by_name(game.main_image),
-            game_showcase_images=await get_showcase_images_by_names(game.game_showcase_images),
+            game_showcase_images=game.game_showcase_images,
             visible=game.visible
         )
 
@@ -93,6 +91,7 @@ class GameDtoCreate(BaseModel):
     @classmethod
     def to_game(cls):
         return Game(
+            id=ObjectId(),
             name=cls.name,
             developer=cls.developer,
             publisher=cls.publisher,

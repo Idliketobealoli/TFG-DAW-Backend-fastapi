@@ -4,7 +4,7 @@ import datetime
 
 
 class Review(BaseModel):
-    id: ObjectId = Field(default=ObjectId())
+    id: ObjectId
     game_id: ObjectId
     user_id: ObjectId
     publish_date: SkipValidation[datetime] = Field(default=datetime.datetime.now())

@@ -1,9 +1,9 @@
+from bson import ObjectId
 from pydantic import BaseModel, EmailStr, SkipValidation
 from fastapi import HTTPException, status
 from typing import Optional
 import datetime
 
-from repositories.user_repository import get_pfp_by_name
 from services.cipher_service import encode
 from model.user import Role, User
 
@@ -16,7 +16,6 @@ class UserDto(BaseModel):
     email: EmailStr
     birthdate: SkipValidation[datetime]
     role: Role
-    profile_picture: bytes
     active: bool
 
     @classmethod
@@ -29,7 +28,6 @@ class UserDto(BaseModel):
             email=user.email,
             birthdate=user.birthdate,
             role=user.role,
-            profile_picture=await get_pfp_by_name(user.profile_picture),
             active=user.active
         )
 
@@ -81,6 +79,7 @@ class UserDtoCreate(BaseModel):
     @classmethod
     def to_user(cls):
         return User(
+            id=ObjectId(),
             name=cls.name,
             surname=cls.surname,
             username=cls.username,

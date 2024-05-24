@@ -1,11 +1,14 @@
-import os
+import os.path
 from typing import List, Set, Optional
-import aiofiles
 from bson import ObjectId
 from fastapi import UploadFile, HTTPException, status
 from dto.game_dto import GameDto, GameDtoCreate, GameDtoUpdate
-from repositories.game_repository import GameRepository
+from repositories.game_repository import GameRepository, get_game_downloadable_by_name, get_image_by_name
 from repositories.review_repository import ReviewRepository
+
+
+def get_showcase_image(name: str):
+    return get_image_by_name(name)
 
 
 class GameService:
@@ -18,6 +21,12 @@ class GameService:
 
     async def get_game_by_id(self, game_id: ObjectId) -> Optional[GameDto]:
         game = await self.game_repository.get_game_by_id(game_id)
+        if not game:
+            return None
+        return await GameDto.from_game(game, self.review_repository)
+
+    async def get_game_by_name_and_dev(self, name: str, dev: str) -> Optional[GameDto]:
+        game = await self.game_repository.get_game_by_name_and_dev(name, dev)
         if not game:
             return None
         return await GameDto.from_game(game, self.review_repository)
@@ -40,17 +49,12 @@ class GameService:
     async def upload_main_image(self, game_id: ObjectId, file: UploadFile):
         game = await self.game_repository.get_game_by_id(game_id)
         if not game:
-            return None
+            return False
         if not file.content_type.startswith("image/"):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
                                 detail="Uploaded file is not an image.")
 
-        await self.game_repository.upload_main_image(file, game_id)
-
-        updated_game = await self.game_repository.get_game_by_id(game_id)
-        if not updated_game:
-            return None
-        return await GameDto.from_game(updated_game, self.review_repository)
+        return await self.game_repository.upload_main_image(file, game_id)
     
     async def upload_showcase_images(self, game_id: ObjectId, files: Set[UploadFile]):
         game = await self.game_repository.get_game_by_id(game_id)
@@ -68,31 +72,27 @@ class GameService:
             return None
         return await GameDto.from_game(updated_game, self.review_repository)
 
-    async def clear_showcase_images(self, game_id: ObjectId) -> bool:
+    async def clear_showcase_images(self, game_id: ObjectId):
         game = await self.get_game_by_id(game_id)
         if not game:
-            return False
-        game.game_showcase_images.clear()
-        updated_game = await self.game_repository.update_game(game_id, game.dict())
-        return updated_game is not None
+            return None
+        deleted_images = await self.game_repository.clear_showcase_images(game_id)
+        if deleted_images:
+            game.game_showcase_images.clear()
+            updated_game = await self.game_repository.update_game(game_id, game.dict())
+            return updated_game is not None
+        else:
+            return None
     
     async def upload_game_file(self, game_id: ObjectId, file: UploadFile):
         game = await self.game_repository.get_game_by_id(game_id)
         if not game:
-            return None
-        file_data = await file.read()
-        _, extension = os.path.splitext(file.filename)
-        save_path = os.path.join("..", "resources", "game_files", f"{game.name}.{extension}")
+            return False
+        if not file.content_type.startswith("image/"):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="Uploaded file is not an image.")
 
-        async with aiofiles.open(save_path, "wb") as game_file:
-            await game_file.write(file_data)
-
-        # game.file = os.path.join("resources", "game_files", f"{game.name}.{extension}")
-        updated_game = await self.game_repository.update_game(game_id, game.dict())
-        if not updated_game:
-            return None
-        return None # CONTINUAR EN CASA. QUIERO MIRAR TAMBIEN COMO SACAR DE VERDAD LAS IMAGENES, PORQUE DE LA FORMA ACTUAL NO DEBERIA DE FUNCIONAR
-    # EN PLAN, DEBERIA GUARDARLAS BIEN PERO PARA MOSTRARLAS NO.
+        return await self.game_repository.upload_game_file(file, game_id)
 
     async def delete_game(self, game_id: ObjectId) -> Optional[GameDto]:
         game = await self.get_game_by_id(game_id)
@@ -102,10 +102,19 @@ class GameService:
         if not deleted_game:
             return None
         return await GameDto.from_game(deleted_game, self.review_repository)
-        # return await self.game_repository.delete_game(game_id)
 
-    async def get_download(self, game_id: ObjectId): # -> Optional[]:
-        game = await self.get_game_by_id(game_id)
+    async def get_download(self, game_id: ObjectId):
+        game = await self.game_repository.get_game_by_id(game_id)
         if not game:
             return None
-        
+        file = get_game_downloadable_by_name(game.file)
+        if os.path.isfile(file):
+            return file
+        else:
+            return None
+
+    async def get_main_image(self, game_id: ObjectId):
+        game = await self.game_repository.get_game_by_id(game_id)
+        if not game:
+            return None
+        return get_image_by_name(game.main_image)

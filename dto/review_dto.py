@@ -57,6 +57,7 @@ class ReviewDtoCreate(BaseModel):
     @classmethod
     def to_review(cls):
         return Review(
+            id=ObjectId(),
             game_id=cls.game_id,
             user_id=cls.user_id,
             rating=cls.rating,

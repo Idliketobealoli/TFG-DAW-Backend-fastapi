@@ -1,5 +1,3 @@
-import os
-
 from fastapi import UploadFile
 from motor.motor_asyncio import AsyncIOMotorCollection
 from bson import ObjectId
@@ -9,10 +7,8 @@ from model.user import User
 from repositories import file_repository
 
 
-async def get_pfp_by_name(name: str) -> bytes:
-    # return base64.b64encode(await file_repository.get_file(
-    #     os.path.join("user_pfp", name))).decode('utf-8')
-    await file_repository.get_file(os.path.join("user_pfp", name))
+def get_pfp_by_name(name: str) -> str:
+    return file_repository.get_file_full_path("user_pfp", name)
 
 
 class UserRepository:
@@ -44,15 +40,15 @@ class UserRepository:
                                          {"$set": user_data})  # Si no funciona, ver gamerepository
         return await self.get_user_by_id(user_id)
 
-    async def upload_image_for_user(self, file: UploadFile, user_id: ObjectId) -> Optional[User]:
+    async def upload_image_for_user(self, file: UploadFile, user_id: ObjectId) -> bool:
         user = await self.get_user_by_id(user_id)
         if not user:
-            return None
+            return False
         pfp = await file_repository.upload_file(file, "user_pfp", str(user_id))
         user.profile_picture = pfp
         await self.collection.update_one({"id": user.pop('id', None)},
                                          {"$set": user.dict()})
-        return await self.get_user_by_id(user_id)
+        return True
 
     async def delete_user(self, user_id: ObjectId) -> Optional[User]:
         user = await self.get_user_by_id(user_id)
@@ -61,6 +57,3 @@ class UserRepository:
         user.active = False
         await self.collection.update_one({"id": user.pop('id', None)}, {"$set": user})  # Lo mismo aqui
         return await self.get_user_by_id(user_id)
-        # await self.collection.delete_one({"id": user_id})
-        # user = await self.get_user_by_id(user_id)
-        # return user is None

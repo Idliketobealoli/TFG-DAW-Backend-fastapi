@@ -1,4 +1,6 @@
 from enum import Enum
+from typing import Set
+
 from pydantic import BaseModel, SkipValidation, Field
 from bson import ObjectId
 import datetime
@@ -44,7 +46,7 @@ class Language(str, Enum):
 
 
 class Game(BaseModel):
-    id: ObjectId = Field(default=ObjectId())
+    id: ObjectId
     name: str
     developer: str
     publisher: str
@@ -53,9 +55,9 @@ class Game(BaseModel):
     description: str
     release_date: SkipValidation[datetime] = Field(default=datetime.datetime.now())
     sell_number: int = Field(default=0)
-    main_image: str = Field(default="base_game_icon.png")
+    main_image: str = Field(default="base.png")
     game_showcase_images: [str] = Field(default=[])
-    # file: [str]
+    file: str = Field(default="")
     visible: bool = Field(default=True)
 
     class Config:

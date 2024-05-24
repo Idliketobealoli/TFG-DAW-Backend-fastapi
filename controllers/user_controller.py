@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Query, UploadFile, File
+from fastapi import APIRouter, Query, UploadFile, File, HTTPException, status
+from fastapi.responses import FileResponse
 from services.user_service import UserService
 from dto.user_dto import UserDtoCreate, UserDtoUpdate
 from bson import ObjectId
 from typing import Optional
-
 
 user_routes = APIRouter()
 user_service = UserService()
@@ -25,6 +25,11 @@ async def get_all_users(active: Optional[bool] = Query(None)):
 @user_routes.get("/users/{user_id_str}")
 async def get_user_by_id(user_id_str: str):
     return await user_service.get_user_by_id(ObjectId(user_id_str))
+
+
+@user_routes.get("/users/pfp/{user_id_str}")
+async def get_user_pfp_by_id(user_id_str: str):
+    return FileResponse(await user_service.get_user_pfp_by_id(ObjectId(user_id_str)))
 
 
 @user_routes.post("/users/")

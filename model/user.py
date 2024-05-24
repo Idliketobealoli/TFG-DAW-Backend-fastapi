@@ -10,7 +10,7 @@ class Role(str, Enum):
 
 
 class User(BaseModel):
-    id: ObjectId = Field(default=ObjectId())
+    id: ObjectId
     name: str
     surname: str
     username: str
@@ -19,7 +19,7 @@ class User(BaseModel):
     birthdate: SkipValidation[datetime]
     role: Role = Field(default=Role.USER)
     active: bool = Field(default=True)
-    profile_picture: str = Field(default="base_user_pfp.png")
+    profile_picture: str = Field(default="base.png")
 
     class Config:
         arbitrary_types_allowed = True
