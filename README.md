@@ -1,4 +1,4 @@
-<h1 align="center">🔹🔷 VGameShop 🔷🔹</h1>
+<h1 align="center">🔹🔷 VgameStore 🔷🔹</h1>
 
 <p align="center">This is the final project for the Web Application Development course at IES Laguna de Joatzel, Getafe, Madrid.</p>
 
