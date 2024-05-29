@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter
 from services.wishlist_service import WishlistService
 from bson import ObjectId
 
@@ -17,11 +17,6 @@ async def get_wishlist_by_id(wishlist_id_str: str):
     return await wishlist_service.get_wishlist_by_id(ObjectId(wishlist_id_str))
 
 
-# @wishlist_routes.post("/wishlists/")
-# async def post_wishlist(wishlist: WishlistDtoCreate):
-#    return await wishlist_service.create_wishlist(wishlist)
-
-
 @wishlist_routes.put("/wishlists/add_game/{wishlist_id_str}")
 async def add_to_wishlist(wishlist_id_str: str, game_id_str: str):
     return await wishlist_service.add_to_wishlist(ObjectId(wishlist_id_str), ObjectId(game_id_str))
@@ -30,8 +25,3 @@ async def add_to_wishlist(wishlist_id_str: str, game_id_str: str):
 @wishlist_routes.put("/wishlists/remove_game/{wishlist_id_str}")
 async def remove_from_wishlist(wishlist_id_str: str, game_id_str: str):
     return await wishlist_service.remove_from_wishlist(ObjectId(wishlist_id_str), ObjectId(game_id_str))
-
-
-# @wishlist_routes.delete("/wishlists/{wishlist_id_str}")
-# async def delete_wishlist_by_id(wishlist_id_str: str):
-#    return await wishlist_service.delete_wishlist(ObjectId(wishlist_id_str))

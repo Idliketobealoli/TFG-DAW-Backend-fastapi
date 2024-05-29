@@ -36,7 +36,7 @@ class UserRepository:
         user = await self.get_user_by_id(user_id)
         if not user:
             return None
-        await self.collection.update_one({"id": user.pop('id', None)},
+        await self.collection.update_one({"id": user.dict().pop('id', None)},
                                          {"$set": user_data})  # Si no funciona, ver gamerepository
         return await self.get_user_by_id(user_id)
 
@@ -46,7 +46,7 @@ class UserRepository:
             return False
         pfp = await file_repository.upload_file(file, "user_pfp", str(user_id))
         user.profile_picture = pfp
-        await self.collection.update_one({"id": user.pop('id', None)},
+        await self.collection.update_one({"id": user.dict().pop('id', None)},
                                          {"$set": user.dict()})
         return True
 
@@ -55,5 +55,5 @@ class UserRepository:
         if not user:
             return None
         user.active = False
-        await self.collection.update_one({"id": user.pop('id', None)}, {"$set": user})  # Lo mismo aqui
+        await self.collection.update_one({"id": user.dict().pop('id', None)}, {"$set": user.dict()})  # Lo mismo aqui
         return await self.get_user_by_id(user_id)

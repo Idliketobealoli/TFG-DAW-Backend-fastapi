@@ -3,7 +3,6 @@ from pydantic import BaseModel, EmailStr, SkipValidation
 from fastapi import HTTPException, status
 from typing import Optional
 import datetime
-
 from services.cipher_service import encode
 from model.user import Role, User
 
@@ -35,6 +34,24 @@ class UserDto(BaseModel):
         arbitrary_types_allowed = True
 
 
+class UserDtoShort(BaseModel):
+    id: str
+    name: str
+    surname: str
+    username: str
+    email: EmailStr
+
+    @classmethod
+    async def from_user(cls, user: User):
+        return UserDtoShort(
+            id=str(user.id),
+            name=user.name,
+            surname=user.surname,
+            username=user.username,
+            email=user.email
+        )
+
+
 class UserDtoToken(BaseModel):
     user: UserDto
     token: str
@@ -49,43 +66,41 @@ class UserDtoCreate(BaseModel):
     repeatPassword: str
     birthdate: SkipValidation[datetime]
 
-    @classmethod
-    def validate_fields(cls):
-        if len(cls.name) < 2:
+    def validate_fields(self):
+        if len(self.name) < 2:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Name must be longer than 1 character: {cls.name}")
+                                detail=f"Name must be longer than 1 character: {self.name}")
 
-        if len(cls.surname) < 5:
+        if len(self.surname) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Surname must be longer than 4 characters: {cls.surname}")
+                                detail=f"Surname must be longer than 4 characters: {self.surname}")
 
-        if len(cls.username) < 4:
+        if len(self.username) < 4:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Username must be longer than 3 characters: {cls.username}")
+                                detail=f"Username must be longer than 3 characters: {self.username}")
 
-        if cls.repeatPassword != cls.password:
+        if self.repeatPassword != self.password:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Passwords do not match.")
 
-        if len(cls.password) < 6:
+        if len(self.password) < 6:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Password must be at least 6 characters long.")
 
-        if cls.birthdate > datetime.datetime.today:
+        if datetime.datetime.fromisoformat(self.birthdate.__str__()) > datetime.datetime.today():
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Birthdate must not be in the future.")
         return
 
-    @classmethod
-    def to_user(cls):
+    def to_user(self):
         return User(
             id=ObjectId(),
-            name=cls.name,
-            surname=cls.surname,
-            username=cls.username,
-            email=cls.email,
-            password=encode(cls.password),
-            birthdate=cls.birthdate,
+            name=self.name,
+            surname=self.surname,
+            username=self.username,
+            email=self.email,
+            password=encode(self.password),
+            birthdate=self.birthdate,
         )
 
     class Config:
@@ -97,36 +112,34 @@ class UserDtoUpdate(BaseModel):
     surname: Optional[str]
     password: Optional[str]
 
-    @classmethod
-    def validate_fields(cls):
-        if cls.name is not None and len(cls.name) < 2:
+    def validate_fields(self):
+        if self.name is not None and len(self.name) < 2:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Name must be longer than 1 character: {cls.name}")
+                                detail=f"Name must be longer than 1 character: {self.name}")
 
-        if cls.surname is not None and len(cls.surname) < 5:
+        if self.surname is not None and len(self.surname) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Surname must be longer than 4 character: {cls.surname}")
+                                detail=f"Surname must be longer than 4 character: {self.surname}")
 
-        if cls.password is not None and len(cls.password) < 6:
+        if self.password is not None and len(self.password) < 6:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Password must be at least 6 characters long.")
         return
 
-    @classmethod
-    def to_user(cls, user: User):
-        if cls.name is None:
-            cls.name = user.name
-        if cls.surname is None:
-            cls.surname = user.surname
-        if cls.password is None:  # en este caso no debemos cifrarla porque ya está cifrada
+    def to_user(self, user: User):
+        if self.name is None:
+            self.name = user.name
+        if self.surname is None:
+            self.surname = user.surname
+        if self.password is None:  # en este caso no debemos cifrarla porque ya está cifrada
             passwd = user.password
         else:  # en este caso si la ciframos
-            passwd = encode(cls.password)
+            passwd = encode(self.password)
 
         return User(
             id=user.id,
-            name=cls.name,
-            surname=cls.surname,
+            name=self.name,
+            surname=self.surname,
             username=user.username,
             email=user.email,
             password=passwd,

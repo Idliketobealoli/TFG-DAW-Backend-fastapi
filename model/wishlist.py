@@ -1,19 +1,17 @@
 from pydantic import BaseModel
 from bson import ObjectId
-from typing import Set
 
 
 class Wishlist(BaseModel):
     id: ObjectId
-    game_ids: Set[ObjectId]
+    game_ids: [ObjectId]
 
-    @classmethod
-    def add_to_wishlist(cls, game_id: ObjectId):
-        cls.game_ids.add(game_id)
+    def add_to_wishlist(self, game_id: ObjectId):
+        if game_id not in self.game_ids:
+            self.game_ids.append(game_id)
 
-    @classmethod
-    def remove_from_wishlist(cls, game_id: ObjectId):
-        cls.game_ids.discard(game_id)
+    def remove_from_wishlist(self, game_id: ObjectId):
+        self.game_ids.remove(game_id)
 
     class Config:
         arbitrary_types_allowed = True

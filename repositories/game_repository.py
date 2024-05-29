@@ -1,5 +1,5 @@
 import os
-from fastapi import UploadFile, File
+from fastapi import UploadFile
 from motor.motor_asyncio import AsyncIOMotorCollection
 from bson import ObjectId
 from typing import List, Optional
@@ -43,7 +43,7 @@ class GameRepository:
         game = await self.get_game_by_id(game_id)
         if not game:
             return None
-        await self.collection.update_one({"id": game.pop('id', None)},
+        await self.collection.update_one({"id": game.dict().pop('id', None)},
                                          {"$set": game_data})  # Si no funciona, cambiar por _id
         return await self.get_game_by_id(game_id)
 
@@ -55,7 +55,7 @@ class GameRepository:
         image = await file_repository.upload_file(file, "game_images",
                                                   f"{str(game_id)}-showcase{filename}")
         game.game_showcase_images.add(image)
-        await self.collection.update_one({"id": game.pop('id', None)},
+        await self.collection.update_one({"id": game.dict().pop('id', None)},
                                          {"$set": game.dir()})  # Si no funciona, cambiar por _id
         return True
 
@@ -65,6 +65,9 @@ class GameRepository:
             return False
         for image_path in game.game_showcase_images:
             file_repository.delete_file(os.path.join("game_images", image_path))
+        game.game_showcase_images = []
+        await self.collection.update_one({"id": game.dict().pop('id', None)},
+                                         {"$set": game.dir()})  # Si no funciona, cambiar por _id
         return True
 
     async def upload_main_image(self, file: UploadFile, game_id: ObjectId) -> bool:
@@ -73,7 +76,7 @@ class GameRepository:
             return False
         image = await file_repository.upload_file(file, "game_images", str(game_id))
         game.main_image = image
-        await self.collection.update_one({"id": game.pop('id', None)},
+        await self.collection.update_one({"id": game.dict().pop('id', None)},
                                          {"$set": game.dir()})  # Si no funciona, cambiar por _id
         return True
 
@@ -84,7 +87,7 @@ class GameRepository:
         image = await file_repository.upload_file(file, "game_downloadables",
                                                   f"{game.name}-{game.developer}".replace(" ", "_"))
         game.main_image = image
-        await self.collection.update_one({"id": game.pop('id', None)},
+        await self.collection.update_one({"id": game.dict().pop('id', None)},
                                          {"$set": game.dir()})  # Si no funciona, cambiar por _id
         return True
 
@@ -93,5 +96,5 @@ class GameRepository:
         if not game:
             return None
         game.visible = False
-        await self.collection.update_one({"id": game.pop('id', None)}, {"$set": game})  # Lo mismo aqui
+        await self.collection.update_one({"id": game.dict().pop('id', None)}, {"$set": game.dict()})  # Lo mismo aqui
         return await self.get_game_by_id(game_id)

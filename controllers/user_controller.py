@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, UploadFile, File, HTTPException, status
+from fastapi import APIRouter, Query, UploadFile, File
 from fastapi.responses import FileResponse
 from services.user_service import UserService
 from dto.user_dto import UserDtoCreate, UserDtoUpdate

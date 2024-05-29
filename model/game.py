@@ -1,6 +1,4 @@
 from enum import Enum
-from typing import Set
-
 from pydantic import BaseModel, SkipValidation, Field
 from bson import ObjectId
 import datetime

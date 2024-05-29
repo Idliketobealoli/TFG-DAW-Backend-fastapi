@@ -34,7 +34,7 @@ class ReviewRepository:
         review = await self.get_review_by_id(review_id)
         if not review:
             return None
-        await self.collection.update_one({"id": review.pop('id', None)}, {"$set": review_data})
+        await self.collection.update_one({"id": review.dict().pop('id', None)}, {"$set": review_data})
         return await self.get_review_by_id(review_id)
 
     async def delete_review(self, review_id: ObjectId) -> bool:

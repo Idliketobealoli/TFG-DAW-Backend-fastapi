@@ -21,7 +21,7 @@ class WishlistRepository:
         return [Wishlist(**wishlist) for wishlist in wishlists]
 
     async def create_wishlist(self, user_id: ObjectId) -> Optional[Wishlist]:
-        wishlist = Wishlist(id=user_id, game_ids=set())
+        wishlist = Wishlist(id=user_id, game_ids=[])
         await self.collection.insert_one(wishlist.dict())
         return await self.get_wishlist_by_id(wishlist.id)
 
@@ -29,10 +29,5 @@ class WishlistRepository:
         wishlist = await self.get_wishlist_by_id(wishlist_id)
         if not wishlist:
             return None
-        await self.collection.update_one({"id": wishlist.pop('id', None)}, {"$set": wishlist_data})
+        await self.collection.update_one({"id": wishlist.dict().pop('id', None)}, {"$set": wishlist_data})
         return await self.get_wishlist_by_id(wishlist_id)
-
-    # async def delete_wishlist(self, wishlist_id: ObjectId) -> bool:
-    #    await self.collection.delete_one({"id": wishlist_id})
-    #    wishlist = await self.get_wishlist_by_id(wishlist_id)
-    #    return wishlist is None

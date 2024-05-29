@@ -48,6 +48,22 @@ class GameDto(BaseModel):
         arbitrary_types_allowed = True
 
 
+class GameDtoShort(BaseModel):
+    id: str
+    name: str
+    developer: str
+    publisher: str
+
+    @classmethod
+    async def from_game(cls, game: Game):
+        return GameDtoShort(
+            id=str(game.id),
+            name=game.name,
+            developer=game.developer,
+            publisher=game.publisher
+        )
+
+
 class GameDtoCreate(BaseModel):
     name: str
     developer: str
@@ -57,48 +73,46 @@ class GameDtoCreate(BaseModel):
     description: str
     release_date: SkipValidation[datetime]
 
-    @classmethod
-    def validate_fields(cls):
-        if len(cls.name) < 2:
+    def validate_fields(self):
+        if len(self.name) < 2:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Name must be longer than 1 character: {cls.name}")
+                                detail=f"Name must be longer than 1 character: {self.name}")
 
-        if len(cls.developer) < 5:
+        if len(self.developer) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Developer name must be longer than 4 characters: {cls.developer}")
+                                detail=f"Developer name must be longer than 4 characters: {self.developer}")
 
-        if len(cls.publisher) < 5:
+        if len(self.publisher) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Publisher name must be longer than 4 characters: {cls.publisher}")
+                                detail=f"Publisher name must be longer than 4 characters: {self.publisher}")
 
-        if len(cls.genres) < 1:
+        if len(self.genres) < 1:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"There must be at least one genre: {cls.genres}")
+                                detail=f"There must be at least one genre: {self.genres}")
 
-        if len(cls.languages) < 1:
+        if len(self.languages) < 1:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"There must be at least one language: {cls.languages}")
+                                detail=f"There must be at least one language: {self.languages}")
 
-        if len(cls.description) < 10:
+        if len(self.description) < 10:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Description must be longer than 9 characters: {cls.description}")
+                                detail=f"Description must be longer than 9 characters: {self.description}")
 
-        if cls.release_date > datetime.datetime.today:
+        if datetime.datetime.fromisoformat(self.release_date.__str__()) > datetime.datetime.today():
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Release date must not be in the future.")
         return
 
-    @classmethod
-    def to_game(cls):
+    def to_game(self):
         return Game(
             id=ObjectId(),
-            name=cls.name,
-            developer=cls.developer,
-            publisher=cls.publisher,
-            genres=cls.genres,
-            languages=cls.languages,
-            description=cls.description,
-            release_date=cls.release_date
+            name=self.name,
+            developer=self.developer,
+            publisher=self.publisher,
+            genres=self.genres,
+            languages=self.languages,
+            description=self.description,
+            release_date=self.release_date
         )
 
     class Config:
@@ -113,56 +127,54 @@ class GameDtoUpdate(BaseModel):
     languages: Optional[Set[Language]]
     description: Optional[str]
 
-    @classmethod
-    def validate_fields(cls):
-        if cls.name is not None and len(cls.name) < 2:
+    def validate_fields(self):
+        if self.name is not None and len(self.name) < 2:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Name must be longer than 1 character: {cls.name}")
+                                detail=f"Name must be longer than 1 character: {self.name}")
 
-        if cls.developer is not None and len(cls.developer) < 5:
+        if self.developer is not None and len(self.developer) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Developer name must be longer than 4 characters: {cls.developer}")
+                                detail=f"Developer name must be longer than 4 characters: {self.developer}")
 
-        if cls.publisher is not None and len(cls.publisher) < 5:
+        if self.publisher is not None and len(self.publisher) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Publisher name must be longer than 4 characters: {cls.publisher}")
+                                detail=f"Publisher name must be longer than 4 characters: {self.publisher}")
 
-        if cls.genres is not None and len(cls.genres) < 1:
+        if self.genres is not None and len(self.genres) < 1:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"There must be at least one genre: {cls.genres}")
+                                detail=f"There must be at least one genre: {self.genres}")
 
-        if cls.languages is not None and len(cls.languages) < 1:
+        if self.languages is not None and len(self.languages) < 1:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"There must be at least one language: {cls.languages}")
+                                detail=f"There must be at least one language: {self.languages}")
 
-        if cls.description is not None and len(cls.description) < 10:
+        if self.description is not None and len(self.description) < 10:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"Description must be longer than 9 characters: {cls.description}")
+                                detail=f"Description must be longer than 9 characters: {self.description}")
         return
 
-    @classmethod
-    def to_game(cls, game: Game):
-        if cls.name is None:
-            cls.name = game.name
-        if cls.developer is None:
-            cls.developer = game.developer
-        if cls.publisher is None:
-            cls.publisher = game.publisher
-        if cls.genres is None:
-            cls.genres = game.genres
-        if cls.languages is None:
-            cls.languages = game.languages
-        if cls.description is None:
-            cls.description = game.description
+    def to_game(self, game: Game):
+        if self.name is None:
+            self.name = game.name
+        if self.developer is None:
+            self.developer = game.developer
+        if self.publisher is None:
+            self.publisher = game.publisher
+        if self.genres is None:
+            self.genres = game.genres
+        if self.languages is None:
+            self.languages = game.languages
+        if self.description is None:
+            self.description = game.description
 
         return Game(
             id=game.id,
-            name=cls.name,
-            developer=cls.developer,
-            publisher=cls.publisher,
-            genres=cls.genres,
-            languages=cls.languages,
-            description=cls.description,
+            name=self.name,
+            developer=self.developer,
+            publisher=self.publisher,
+            genres=self.genres,
+            languages=self.languages,
+            description=self.description,
             release_date=game.release_date,
             sell_number=game.sell_number,
             main_image=game.main_image,

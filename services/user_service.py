@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 from bson import ObjectId
 from fastapi import UploadFile, HTTPException, status
 from dto.user_dto import UserDto, UserDtoCreate, UserDtoUpdate
@@ -34,38 +34,44 @@ class UserService:
                                 detail=f"User with ID: {user_id} not found.")
         return get_pfp_by_name(user.profile_picture)
 
-    async def create_user(self, user_dto: UserDtoCreate) -> Optional[UserDto]:
+    async def create_user(self, user_dto: UserDtoCreate) -> UserDto:
         user = await self.user_repository.create_user(user_dto.to_user())
         if not user:
-            return None
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                                detail=f"There was an error when creating user: {user_dto.name} {user_dto.surname}.")
         await self.library_repository.create_library(user.id)
         await self.wishlist_repository.create_wishlist(user.id)
         return await UserDto.from_user(user)
 
-    async def update_user(self, user_id: ObjectId, user_dto: UserDtoUpdate) -> Optional[UserDto]:
+    async def update_user(self, user_id: ObjectId, user_dto: UserDtoUpdate) -> UserDto:
         user = await self.user_repository.get_user_by_id(user_id)
         if not user:
-            return None
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"User with ID: {user_id} not found.")
         updated_user = await self.user_repository.update_user(user_id, user_dto.to_user(user).dict())
         if not updated_user:
-            return None
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                                detail=f"There was an error when updating user: {user.name} {user.surname}.")
         return await UserDto.from_user(updated_user)
 
-    async def upload_profile_picture(self, user_id: ObjectId, file: UploadFile):
+    async def upload_profile_picture(self, user_id: ObjectId, file: UploadFile) -> bool:
         user = await self.user_repository.get_user_by_id(user_id)
         if not user:
-            return False
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"User with ID: {user_id} not found.")
         if not file.content_type.startswith("image/"):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail="Uploaded file is not an image.")
 
         return await self.user_repository.upload_image_for_user(file, user_id)
 
-    async def delete_user(self, user_id: ObjectId) -> Optional[UserDto]:
+    async def delete_user(self, user_id: ObjectId) -> UserDto:
         user = await self.get_user_by_id(user_id)
         if not user:
-            return None
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"User with ID: {user_id} not found.")
         deleted_user = await self.user_repository.delete_user(user_id)
         if not deleted_user:
-            return None
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                                detail=f"There was an error when deleting user: {user.name} {user.surname}.")
         return await UserDto.from_user(deleted_user)

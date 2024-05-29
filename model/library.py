@@ -1,15 +1,14 @@
 from pydantic import BaseModel
 from bson import ObjectId
-from typing import Set
 
 
 class Library(BaseModel):
     id: ObjectId
-    game_ids: Set[ObjectId]
+    game_ids: [ObjectId]
 
-    @classmethod
-    def add_to_library(cls, game_id: ObjectId):
-        cls.game_ids.add(game_id)
+    def add_to_library(self, game_id: ObjectId):
+        if game_id not in self.game_ids:
+            self.game_ids.append(game_id)
 
     class Config:
         arbitrary_types_allowed = True

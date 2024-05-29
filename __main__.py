@@ -16,6 +16,8 @@ import asyncio
 
 app = FastAPI()
 
+# TODO:  MARINA, NO SE SI NECESITARÁS ESTO, NO CREO, PERO POR SI ACASO TE LO DEJO AQUÍ.
+#  TODO: SI NO LO ACABAS USANDO, PUEDES QUITAR LO QUE ESTÁ COMENTADO
 # Include CORS middleware to allow cross-origin requests
 # app.add_middleware(
 #     CORSMiddleware,
@@ -42,18 +44,21 @@ async def load_users():
         User(id=ObjectId(), name="Marina Guanghua", surname="Pintado", username="darkhuo10", email="admin1@gmail.com",
              password="admin1234", birthdate=datetime.datetime(2003, 12, 10), role=Role.ADMIN,
              profile_picture="asdf.png"),
+
         User(id=ObjectId(), name="Daniel", surname="Rodríguez", username="Idliketobealoli", email="admin2@gmail.com",
              password="loli1707", birthdate=datetime.datetime(2002, 5, 26), role=Role.ADMIN),
+
         User(id=ObjectId(), name="User 1", surname="Apellido", username="usuario1", email="user1@gmail.com",
              password="password1", birthdate=datetime.datetime(2002, 5, 26)),
+
         User(id=ObjectId(), name="User 2", surname="Apellido 2", username="usuario2", email="user2@gmail.com",
              password="password2", birthdate=datetime.datetime(2002, 5, 26)),
+
         User(id=ObjectId(), name="User 3", surname="Apellido 3", username="usuario3", email="user4@gmail.com",
              password="password4", birthdate=datetime.datetime(2002, 5, 26))
     ]
 
     user_repository = UserRepository()
-
     await asyncio.gather(*[user_repository.create_user(user) for user in initial_users])
 
 
@@ -81,7 +86,6 @@ async def load_games():
     ]
 
     game_repository = GameRepository()
-
     await asyncio.gather(*[game_repository.create_game(game) for game in initial_games])
 
 

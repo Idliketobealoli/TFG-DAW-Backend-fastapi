@@ -20,7 +20,8 @@ async def get_all_reviews(
 
     if user_id:  # and ObjectId(user_id):
         # poniendo esta linea comentada arriba se asegura que solo entre si es un guid valido, 
-        # pero podria llevar a casos inesperados como que si solo esta el param user_id y es invalido, devuelva todo.
+        # pero podria llevar a casos inesperados como que si solo esta el param user_id y es invalido,
+        # devuelva todas las reviews existentes.
         reviews = [review for review in reviews if user_id == review.user.id]
 
     if game_id:
