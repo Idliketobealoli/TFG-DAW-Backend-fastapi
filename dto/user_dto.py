@@ -57,6 +57,11 @@ class UserDtoToken(BaseModel):
     token: str
 
 
+class UserDtoLogin(BaseModel):
+    username: str
+    password: str
+
+
 class UserDtoCreate(BaseModel):
     name: str
     surname: str

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query, UploadFile, File
 from fastapi.responses import FileResponse
 from services.user_service import UserService
-from dto.user_dto import UserDtoCreate, UserDtoUpdate
+from dto.user_dto import UserDtoCreate, UserDtoUpdate, UserDtoLogin
 from bson import ObjectId
 from typing import Optional
 
@@ -12,6 +12,11 @@ user_service = UserService()
 @user_routes.get("/prueba")
 def hello_world():
     return "hello world!"
+
+
+@user_routes.post("/prueba2")
+def hello_world(user: UserDtoLogin):
+    return '{"token": "hello world! '+user.username+' - '+user.password+'"}'
 
 
 @user_routes.get("/users")

@@ -1,6 +1,7 @@
 import uvicorn
 from bson import ObjectId
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from controllers.user_controller import user_routes
 from controllers.game_controller import game_routes
 from controllers.review_controller import review_routes
@@ -16,16 +17,14 @@ import asyncio
 
 app = FastAPI()
 
-# TODO:  MARINA, NO SE SI NECESITARÁS ESTO, NO CREO, PERO POR SI ACASO TE LO DEJO AQUÍ.
-#  TODO: SI NO LO ACABAS USANDO, PUEDES QUITAR LO QUE ESTÁ COMENTADO
-# Include CORS middleware to allow cross-origin requests
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],  # You can restrict this to specific origins if needed
-#     allow_credentials=True,
-#     allow_methods=["GET", "POST", "PUT", "DELETE"],
-#     allow_headers=["*"],
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # You can restrict this to specific origins if needed
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
+
 app.include_router(user_routes)
 app.include_router(game_routes)
 app.include_router(review_routes)
