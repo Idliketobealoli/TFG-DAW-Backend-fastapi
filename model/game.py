@@ -44,6 +44,7 @@ class Language(str, Enum):
 
 
 class Game(BaseModel):
+    # AÑADE EL PRECIO!!!!!!
     id: ObjectId
     name: str
     developer: str
