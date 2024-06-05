@@ -16,6 +16,7 @@ class GameDto(BaseModel):
     languages: Set[Language]
     rating: float
     description: str
+    price: float
     release_date: SkipValidation[datetime]
     sell_number: int
     game_showcase_images: Set[str]
@@ -38,6 +39,7 @@ class GameDto(BaseModel):
             languages=game.languages,
             rating=rating,
             description=game.description,
+            price=game.price,
             release_date=game.release_date,
             sell_number=game.sell_number,
             game_showcase_images=game.game_showcase_images,
@@ -53,6 +55,7 @@ class GameDtoShort(BaseModel):
     name: str
     developer: str
     publisher: str
+    price: float
 
     @classmethod
     async def from_game(cls, game: Game):
@@ -60,7 +63,8 @@ class GameDtoShort(BaseModel):
             id=str(game.id),
             name=game.name,
             developer=game.developer,
-            publisher=game.publisher
+            publisher=game.publisher,
+            price=game.price
         )
 
 
@@ -123,6 +127,7 @@ class GameDtoUpdate(BaseModel):
     name: Optional[str]
     developer: Optional[str]
     publisher: Optional[str]
+    price: Optional[float]
     genres: Optional[Set[Genre]]
     languages: Optional[Set[Language]]
     description: Optional[str]
@@ -139,6 +144,10 @@ class GameDtoUpdate(BaseModel):
         if self.publisher is not None and len(self.publisher) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Publisher name must be longer than 4 characters: {self.publisher}")
+
+        if self.price is not None and self.price < 0:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Price must be a positive number: {self.publisher}")
 
         if self.genres is not None and len(self.genres) < 1:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -160,6 +169,8 @@ class GameDtoUpdate(BaseModel):
             self.developer = game.developer
         if self.publisher is None:
             self.publisher = game.publisher
+        if self.price is None:
+            self.price = game.price
         if self.genres is None:
             self.genres = game.genres
         if self.languages is None:
@@ -175,6 +186,7 @@ class GameDtoUpdate(BaseModel):
             genres=self.genres,
             languages=self.languages,
             description=self.description,
+            price=self.price,
             release_date=game.release_date,
             sell_number=game.sell_number,
             main_image=game.main_image,

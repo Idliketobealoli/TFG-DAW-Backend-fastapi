@@ -52,6 +52,7 @@ class Game(BaseModel):
     genres: [Genre]
     languages: [Language]
     description: str
+    price: float
     release_date: SkipValidation[datetime] = Field(default=datetime.datetime.now())
     sell_number: int = Field(default=0)
     main_image: str = Field(default="base.png")
