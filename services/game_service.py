@@ -102,9 +102,9 @@ class GameService:
         if not game:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"Game with ID: {game_id} not found.")
-        if not file.content_type.startswith("image/"):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail="Uploaded file is not an image.")
+        # if not file.content_type.startswith("image/"):
+        #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+        #                         detail="Uploaded file is not an image.")
 
         return await self.game_repository.upload_game_file(file, game_id)
 

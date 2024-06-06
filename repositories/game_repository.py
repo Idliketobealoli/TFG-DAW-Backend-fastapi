@@ -56,7 +56,7 @@ class GameRepository:
                                                   f"{str(game_id)}-showcase{filename}")
         game.game_showcase_images.add(image)
         await self.collection.update_one({"id": game.dict().pop('id', None)},
-                                         {"$set": game.dir()})  # Si no funciona, cambiar por _id
+                                         {"$set": game.dict()})  # Si no funciona, cambiar por _id
         return True
 
     async def clear_showcase_images(self, game_id: ObjectId) -> bool:
@@ -67,7 +67,7 @@ class GameRepository:
             file_repository.delete_file(os.path.join("game_images", image_path))
         game.game_showcase_images = []
         await self.collection.update_one({"id": game.dict().pop('id', None)},
-                                         {"$set": game.dir()})  # Si no funciona, cambiar por _id
+                                         {"$set": game.dict()})  # Si no funciona, cambiar por _id
         return True
 
     async def upload_main_image(self, file: UploadFile, game_id: ObjectId) -> bool:
@@ -77,7 +77,7 @@ class GameRepository:
         image = await file_repository.upload_file(file, "game_images", str(game_id))
         game.main_image = image
         await self.collection.update_one({"id": game.dict().pop('id', None)},
-                                         {"$set": game.dir()})  # Si no funciona, cambiar por _id
+                                         {"$set": game.dict()})  # Si no funciona, cambiar por _id
         return True
 
     async def upload_game_file(self, file: UploadFile, game_id: ObjectId) -> bool:
@@ -86,15 +86,15 @@ class GameRepository:
             return False
         image = await file_repository.upload_file(file, "game_downloadables",
                                                   f"{game.name}-{game.developer}".replace(" ", "_"))
-        game.main_image = image
+        game.file = image
         await self.collection.update_one({"id": game.dict().pop('id', None)},
-                                         {"$set": game.dir()})  # Si no funciona, cambiar por _id
+                                         {"$set": game.dict()})  # Si no funciona, cambiar por _id
         return True
 
     async def delete_game(self, game_id: ObjectId) -> Optional[Game]:
         game = await self.get_game_by_id(game_id)
         if not game:
             return None
-        game.visible = False
-        await self.collection.update_one({"id": game.dict().pop('id', None)}, {"$set": game.dict()})  # Lo mismo aqui
+        game.visible = not game.visible
+        await self.collection.update_one({"id": game.dict().pop('id', None)}, {"$set": game.dict()})
         return await self.get_game_by_id(game_id)

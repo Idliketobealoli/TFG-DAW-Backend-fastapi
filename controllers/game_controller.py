@@ -17,9 +17,13 @@ async def get_all_games(
         name: Optional[str] = Query(None),
         publisher: Optional[str] = Query(None),
         developer: Optional[str] = Query(None),
-        rating: Optional[float] = Query(None)
+        rating: Optional[float] = Query(None),
+        visible: Optional[bool] = Query(None)
 ):
     games = await game_service.get_all_games()
+
+    if visible:
+        games = [game for game in games if visible == game.visible]
 
     if genre:
         games = [game for game in games if genre in game.genres]
@@ -100,5 +104,5 @@ async def download_game_by_id(game_id_str: str):
 
 
 @game_routes.put("/games/upload/{game_id_str}")
-async def download_game_by_id(game_id_str: str, file: UploadFile = File(...)):
+async def upload_game_by_id(game_id_str: str, file: UploadFile = File(...)):
     return await game_service.upload_game_file(ObjectId(game_id_str), file)
