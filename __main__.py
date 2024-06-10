@@ -10,10 +10,13 @@ from controllers.library_controller import library_routes
 from db.database import db
 from model.user import User, Role
 from model.game import Game, Language, Genre
+from repositories.library_repository import LibraryRepository
 from repositories.user_repository import UserRepository
 from repositories.game_repository import GameRepository
 import datetime
 import asyncio
+
+from repositories.wishlist_repository import WishlistRepository
 
 app = FastAPI()
 
@@ -30,6 +33,10 @@ app.include_router(game_routes)
 app.include_router(review_routes)
 app.include_router(wishlist_routes)
 app.include_router(library_routes)
+
+user_repository = UserRepository()
+library_repository = LibraryRepository()
+wishlist_repository = WishlistRepository()
 
 
 @app.on_event("startup")
@@ -59,8 +66,15 @@ async def load_users():
              password="password4", birthdate=datetime.datetime(2002, 5, 26))
     ]
 
-    user_repository = UserRepository()
-    await asyncio.gather(*[user_repository.create_user(user) for user in initial_users])
+    # Los usuarios con sus libraries y wishlists se crean a la vez (en hilos distintos), pero dentro de la creación
+    # de cada usuario, primero se crea el usuario, luego la wishlist y luego la library, para evitar problemas.
+    await asyncio.gather(*[create_user_with_library_and_wishlist(user) for user in initial_users])
+
+
+async def create_user_with_library_and_wishlist(user):
+    await user_repository.create_user(user)
+    await wishlist_repository.create_wishlist(user.id)
+    await library_repository.create_library(user.id)
 
 
 async def load_games():

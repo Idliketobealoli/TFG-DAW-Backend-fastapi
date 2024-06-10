@@ -9,17 +9,20 @@ from services.user_service import UserService
 
 class WishlistDto(BaseModel):
     user: UserDto
-    games: Set[GameDto]
+    games: [GameDto]
 
     @classmethod
     async def from_wishlist(cls, wishlist: Wishlist, user_service: UserService, game_service: GameService):
-        game_set: Set[GameDto] = set()
+        games: [GameDto] = []
         for game_id in wishlist.game_ids:
             game_to_add = await game_service.get_game_by_id(game_id)
             if game_to_add is not None:
-                game_set.add(game_to_add)
+                games.append(game_to_add)
 
         return WishlistDto(
             user=await user_service.get_user_by_id(wishlist.id),
-            games=game_set
+            games=games
         )
+
+    class Config:
+        arbitrary_types_allowed = True
