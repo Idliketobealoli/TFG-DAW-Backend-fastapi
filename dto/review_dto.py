@@ -24,8 +24,8 @@ class ReviewDto(BaseModel):
         user_model = await user_repository.get_user_by_id(review.user_id)
         return ReviewDto(
             id=str(review.id),
-            game=GameDtoShort.from_game(game_model),
-            user=UserDtoShort.from_user(user_model),
+            game=await GameDtoShort.from_game(game_model),
+            user=await UserDtoShort.from_user(user_model),
             publish_date=review.publish_date,
             rating=review.rating,
             description=review.description
