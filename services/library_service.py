@@ -34,3 +34,11 @@ class LibraryService:
             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                                 detail=f"There was an error when adding game with ID: {game_id}.")
         return await LibraryDto.from_library(updated_library, self.user_service, self.game_service)
+
+    async def is_in_library(self, library_id: ObjectId, game_id: ObjectId) -> bool:
+        library = await self.library_repository.get_library_by_id(library_id)
+        if not library:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"Library with ID: {library_id} not found.")
+
+        return any(gameId == game_id for gameId in library.game_ids)

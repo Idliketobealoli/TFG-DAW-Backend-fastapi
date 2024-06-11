@@ -2,7 +2,7 @@ import os.path
 from typing import List, Set
 from bson import ObjectId
 from fastapi import UploadFile, HTTPException, status
-from dto.game_dto import GameDto, GameDtoCreate, GameDtoUpdate
+from dto.game_dto import GameDto, GameDtoCreate, GameDtoUpdate, GameDtoShort
 from repositories.game_repository import GameRepository, get_game_downloadable_by_name, get_image_by_name
 from repositories.review_repository import ReviewRepository
 
@@ -26,6 +26,13 @@ class GameService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"Game with ID: {game_id} not found.")
         return await GameDto.from_game(game, self.review_repository)
+
+    async def get_game_by_id_short(self, game_id: ObjectId) -> GameDtoShort:
+        game = await self.game_repository.get_game_by_id(game_id)
+        if not game:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"Game with ID: {game_id} not found.")
+        return await GameDtoShort.from_game(game)
 
     async def get_game_by_name_and_dev(self, name: str, dev: str) -> GameDto:
         game = await self.game_repository.get_game_by_name_and_dev(name, dev)

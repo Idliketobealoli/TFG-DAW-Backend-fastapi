@@ -64,6 +64,12 @@ class ReviewDtoCreate(BaseModel):
             description=self.description
         )
 
+    def to_dto_update(self):
+        return ReviewDtoUpdate(
+            rating=self.rating,
+            description=self.description
+        )
+
 
 class ReviewDtoUpdate(BaseModel):
     rating: Optional[float]

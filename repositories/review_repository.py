@@ -21,6 +21,12 @@ class ReviewRepository:
     async def get_reviews_from_user(self, user_id: ObjectId) -> List[Review]:
         reviews = await self.collection.find({"user_id": user_id}).to_list(length=None)
         return [Review(**review) for review in reviews]
+
+    async def get_reviews_from_user_and_game(self, user_id: ObjectId, game_id: ObjectId) -> Optional[Review]:
+        review = await self.collection.find_one({"user_id": user_id, "game_id": game_id})
+        if review:
+            return Review(**review)
+        return None
     
     async def get_reviews_from_game(self, game_id: ObjectId) -> List[Review]:
         reviews = await self.collection.find({"game_id": game_id}).to_list(length=None)

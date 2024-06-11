@@ -1,7 +1,7 @@
 from typing import List
 from bson import ObjectId
 from fastapi import UploadFile, HTTPException, status
-from dto.user_dto import UserDto, UserDtoCreate, UserDtoUpdate
+from dto.user_dto import UserDto, UserDtoCreate, UserDtoUpdate, UserDtoShort
 from repositories.library_repository import LibraryRepository
 from repositories.user_repository import UserRepository, get_pfp_by_name
 from repositories.wishlist_repository import WishlistRepository
@@ -26,6 +26,13 @@ class UserService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"User with ID: {user_id} not found.")
         return await UserDto.from_user(user)
+
+    async def get_user_by_id_short(self, user_id: ObjectId) -> UserDtoShort:
+        user = await self.user_repository.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"User with ID: {user_id} not found.")
+        return await UserDtoShort.from_user(user)
 
     async def get_user_pfp_by_id(self, user_id: ObjectId) -> str:
         user = await self.user_repository.get_user_by_id(user_id)

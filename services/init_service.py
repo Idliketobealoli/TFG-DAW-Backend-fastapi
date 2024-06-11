@@ -1,21 +1,22 @@
+import random
 from bson import ObjectId
-
 from model.review import Review
 from model.user import User, Role
 from model.game import Game, Language, Genre
 from repositories.game_repository import GameRepository
 import datetime
-
 from repositories.review_repository import ReviewRepository
 from repositories.wishlist_repository import WishlistRepository
 from repositories.library_repository import LibraryRepository
 from repositories.user_repository import UserRepository
 import asyncio
-
+from services.wishlist_service import WishlistService
 
 user_repository = UserRepository()
+game_repository = GameRepository()
 library_repository = LibraryRepository()
 wishlist_repository = WishlistRepository()
+wishlist_service = WishlistService()
 
 
 async def load_games():
@@ -111,7 +112,6 @@ async def load_games():
              main_image="60a7b2f7c0f2b441d4f6e9b9.jpg")
     ]
 
-    game_repository = GameRepository()
     await asyncio.gather(*[game_repository.create_game(game) for game in initial_games])
 
 
@@ -199,3 +199,20 @@ async def load_reviews():
 
     review_repository = ReviewRepository()
     await asyncio.gather(*[review_repository.create_review(review) for review in initial_reviews])
+
+
+async def load_wishlists():
+    users = await user_repository.get_users()
+    games = await game_repository.get_games()
+
+    # Queremos añadir un numero aleatorio de juegos a la wishlist de cada usuario,
+    # y que dichos juegos sean aleatorios.
+    for user in users:
+
+        # Por cada usuario, cambiamos el orden de la lista de juegos
+        random.shuffle(games)
+
+        # Después, iteramos entre 0 y N veces, donde N es el último índice de la lista.
+        # Así, puede que haya usuarios sin juegos en la wishlist, y otros con X juegos.
+        for i in range(random.randint(0, len(games)-1)):
+            await wishlist_service.add_to_wishlist(user.id, games[i].id)

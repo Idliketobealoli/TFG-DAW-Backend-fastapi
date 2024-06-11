@@ -8,7 +8,7 @@ from controllers.wishlist_controller import wishlist_routes
 from controllers.library_controller import library_routes
 from db.database import db
 import asyncio
-from services.init_service import load_users, load_games, load_reviews
+from services.init_service import load_users, load_games, load_reviews, load_wishlists
 
 app = FastAPI()
 
@@ -31,6 +31,9 @@ app.include_router(library_routes)
 async def load_initial_data():
     await db.init_database()
     await asyncio.gather(load_users(), load_games(), load_reviews())
+
+    # Esta última después de que se creen las demás porque requiere tanto de juegos como de users.
+    await load_wishlists()
 
 
 if __name__ == '__main__':
