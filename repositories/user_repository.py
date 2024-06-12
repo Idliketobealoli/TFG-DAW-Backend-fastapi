@@ -2,6 +2,9 @@ from fastapi import UploadFile
 from motor.motor_asyncio import AsyncIOMotorCollection
 from bson import ObjectId
 from typing import List, Optional
+
+from pydantic import EmailStr
+
 from db.database import db
 from model.user import User
 from repositories import file_repository
@@ -19,6 +22,19 @@ class UserRepository:
         if user:
             return User(**user)
         return None
+
+    async def get_user_by_username(self, username: str) -> Optional[User]:
+        user = await self.collection.find_one({"username": username})
+        if user:
+            return User(**user)
+        return None
+
+    async def user_exists_by_username_or_email(self, username: str, email: EmailStr) -> bool:
+        user_by_username = await self.collection.find_one({"username": username})
+        user_by_email = await self.collection.find_one({"email": email})
+        if user_by_username or user_by_email:
+            return True
+        return False
 
     async def get_users(self) -> List[User]:
         users = await self.collection.find({}).to_list(length=None)

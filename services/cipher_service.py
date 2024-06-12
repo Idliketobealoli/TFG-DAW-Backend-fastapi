@@ -6,4 +6,6 @@ def encode(string: str) -> str:
 
 
 def match(string: str, hashed_str: str) -> bool:
+    print(string)
+    print(hashed_str)
     return bcrypt.checkpw(string.encode('utf-8'), hashed_str.encode('utf-8'))
