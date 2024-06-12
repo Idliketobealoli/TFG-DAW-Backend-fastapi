@@ -19,20 +19,6 @@ def hello_world(user: UserDtoLogin):
     return '{"token": "hello world! '+user.username+' - '+user.password+'"}'
 
 
-@user_routes.post("/register")
-async def register(user: UserDtoCreate):
-    user.validate_fields()
-    return await user_service.register(user)
-
-@user_routes.post("/login")
-async def register(user: UserDtoLogin):
-    user.validate_fields()
-    return await user_service.register(user)
-
-
-
-
-
 @user_routes.get("/users")
 async def get_all_users(active: Optional[bool] = Query(None)):
     if active is None:
