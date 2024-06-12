@@ -1,5 +1,8 @@
-from fastapi import APIRouter, Query, UploadFile, File, HTTPException, status
+from fastapi import APIRouter, Query, UploadFile, File, HTTPException, status, Depends
 from fastapi.responses import FileResponse
+from fastapi.security import OAuth2PasswordBearer
+
+from services.authentication_service import check_role
 from services.game_service import GameService, get_showcase_image
 from dto.game_dto import GameDtoCreate, GameDtoUpdate
 from model.game import Language, Genre
@@ -10,6 +13,7 @@ from services.library_service import LibraryService
 game_routes = APIRouter()
 game_service = GameService()
 library_service = LibraryService()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @game_routes.get("/games")
@@ -20,8 +24,10 @@ async def get_all_games(
         publisher: Optional[str] = Query(None),
         developer: Optional[str] = Query(None),
         rating: Optional[float] = Query(None),
-        visible: Optional[bool] = Query(None)
+        visible: Optional[bool] = Query(None),
+        token: str = Depends(oauth2_scheme)
 ):
+    check_role(["ADMIN", "USER"], token)
     games = await game_service.get_all_games()
 
     if visible:
@@ -49,12 +55,14 @@ async def get_all_games(
 
 
 @game_routes.get("/games/{game_id_str}")
-async def get_game_by_id(game_id_str: str):
+async def get_game_by_id(game_id_str: str, token: str = Depends(oauth2_scheme)):
+    check_role(["ADMIN", "USER"], token)
     return await game_service.get_game_by_id(ObjectId(game_id_str))
 
 
 @game_routes.post("/games/")
-async def post_game(game: GameDtoCreate):
+async def post_game(game: GameDtoCreate, token: str = Depends(oauth2_scheme)):
+    check_role(["ADMIN"], token)
     game.validate_fields()
     if await game_service.get_game_by_name_and_dev(game.name, game.developer):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -64,47 +72,56 @@ async def post_game(game: GameDtoCreate):
 
 
 @game_routes.put("/games/{game_id_str}")
-async def put_game(game_id_str: str, game: GameDtoUpdate):
+async def put_game(game_id_str: str, game: GameDtoUpdate, token: str = Depends(oauth2_scheme)):
+    check_role(["ADMIN"], token)
     game.validate_fields()
     return await game_service.update_game(ObjectId(game_id_str), game)
 
 
 @game_routes.put("/games/upload_main_img/{game_id_str}")
-async def put_game_main_img(game_id_str: str, file: UploadFile = File(...)):
+async def put_game_main_img(game_id_str: str, file: UploadFile = File(...), token: str = Depends(oauth2_scheme)):
+    check_role(["ADMIN"], token)
     return await game_service.upload_main_image(ObjectId(game_id_str), file)
 
 
 @game_routes.put("/games/upload_showcase_imgs/{game_id_str}")
-async def put_game_showcases(game_id_str: str, files: List[UploadFile] = File(...)):
+async def put_game_showcases(game_id_str: str, files: List[UploadFile] = File(...),
+                             token: str = Depends(oauth2_scheme)):
+    check_role(["ADMIN"], token)
     return await game_service.upload_showcase_images(ObjectId(game_id_str), set(files))
 
 
 @game_routes.put("/games/clear_showcase_imgs/{game_id_str}")
-async def clear_game_showcases(game_id_str: str):
+async def clear_game_showcases(game_id_str: str, token: str = Depends(oauth2_scheme)):
+    check_role(["ADMIN"], token)
     return await game_service.clear_showcase_images(ObjectId(game_id_str))
 
 
 @game_routes.delete("/games/{game_id_str}")
-async def delete_game_by_id(game_id_str: str):
+async def delete_game_by_id(game_id_str: str, token: str = Depends(oauth2_scheme)):
+    check_role(["ADMIN"], token)
     return await game_service.delete_game(ObjectId(game_id_str))
 
 
 @game_routes.get("/games/main_image/{game_id_str}")
-async def get_game_main_img_by_id(game_id_str: str):
+async def get_game_main_img_by_id(game_id_str: str, token: str = Depends(oauth2_scheme)):
+    check_role(["ADMIN", "USER"], token)
     return FileResponse(await game_service.get_main_image(ObjectId(game_id_str)))
 
 
 @game_routes.get("/games/showcase_image/{name}")
-async def get_showcase_img_by_name(name: str):
+async def get_showcase_img_by_name(name: str, token: str = Depends(oauth2_scheme)):
+    check_role(["ADMIN", "USER"], token)
     return FileResponse(get_showcase_image(name))
 
 
 @game_routes.get("/games/download/{game_id_str}")
-async def download_game_by_id(game_id_str: str, user_id: str):
+async def download_game_by_id(game_id_str: str, user_id: str, token: str = Depends(oauth2_scheme)):
+    check_role(["ADMIN", "USER"], token)
     fileResponse = FileResponse(await game_service.get_download(ObjectId(game_id_str)),
                                 content_disposition_type="attachment")
 
-    # Si lo descargamos correctamente, lo añadimos a la libreria
+    # Si lo descargamos correctamente, lo aÃ±adimos a la libreria
     if fileResponse.status_code >= 200 & fileResponse.status_code < 300:
         await library_service.add_to_library(ObjectId(user_id), ObjectId(game_id_str))
 
@@ -112,5 +129,6 @@ async def download_game_by_id(game_id_str: str, user_id: str):
 
 
 @game_routes.put("/games/upload/{game_id_str}")
-async def upload_game_by_id(game_id_str: str, file: UploadFile = File(...)):
+async def upload_game_by_id(game_id_str: str, file: UploadFile = File(...), token: str = Depends(oauth2_scheme)):
+    check_role(["ADMIN"], token)
     return await game_service.upload_game_file(ObjectId(game_id_str), file)
