@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from bson import ObjectId
 from fastapi import HTTPException, status
 from dto.review_dto import ReviewDto, ReviewDtoCreate, ReviewDtoUpdate
@@ -14,15 +14,24 @@ class ReviewService:
 
     async def get_all_reviews(self) -> List[ReviewDto]:
         reviews = await self.review_repository.get_reviews()
-        return [await ReviewDto.from_review(review, self.user_repository, self.game_repository) for review in reviews]
+        return [await ReviewDto.from_review(review, self.user_repository, self.game_repository)
+                for review in sorted(reviews, key=lambda r: r.publish_date)]
     
     async def get_all_reviews_from_user(self, user_id: ObjectId) -> List[ReviewDto]:
         reviews = await self.review_repository.get_reviews_from_user(user_id)
-        return [await ReviewDto.from_review(review, self.user_repository, self.game_repository) for review in reviews]
-    
+        return [await ReviewDto.from_review(review, self.user_repository, self.game_repository)
+                for review in sorted(reviews, key=lambda r: r.publish_date)]
+
+    async def get_review_from_user_and_game(self, user_id: ObjectId, game_id: ObjectId) -> Optional[ReviewDto]:
+        review = await self.review_repository.get_reviews_from_user_and_game(user_id, game_id)
+        if review:
+            return await ReviewDto.from_review(review, self.user_repository, self.game_repository)
+        return None
+
     async def get_all_reviews_from_game(self, game_id: ObjectId) -> List[ReviewDto]:
         reviews = await self.review_repository.get_reviews_from_game(game_id)
-        return [await ReviewDto.from_review(review, self.user_repository, self.game_repository) for review in reviews]
+        return [await ReviewDto.from_review(review, self.user_repository, self.game_repository)
+                for review in sorted(reviews, key=lambda r: r.publish_date)]
 
     async def get_review_by_id(self, review_id: ObjectId) -> ReviewDto:
         review = await self.review_repository.get_review_by_id(review_id)

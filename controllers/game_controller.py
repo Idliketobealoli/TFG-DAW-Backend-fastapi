@@ -5,9 +5,11 @@ from dto.game_dto import GameDtoCreate, GameDtoUpdate
 from model.game import Language, Genre
 from bson import ObjectId
 from typing import Optional, List
+from services.library_service import LibraryService
 
 game_routes = APIRouter()
 game_service = GameService()
+library_service = LibraryService()
 
 
 @game_routes.get("/games")
@@ -98,9 +100,15 @@ async def get_showcase_img_by_name(name: str):
 
 
 @game_routes.get("/games/download/{game_id_str}")
-async def download_game_by_id(game_id_str: str):
-    return FileResponse(await game_service.get_download(ObjectId(game_id_str)),
-                        content_disposition_type="attachment")
+async def download_game_by_id(game_id_str: str, user_id: str):
+    fileResponse = FileResponse(await game_service.get_download(ObjectId(game_id_str)),
+                                content_disposition_type="attachment")
+
+    # Si lo descargamos correctamente, lo añadimos a la libreria
+    if fileResponse.status_code >= 200 & fileResponse.status_code < 300:
+        await library_service.add_to_library(ObjectId(user_id), ObjectId(game_id_str))
+
+    return fileResponse
 
 
 @game_routes.put("/games/upload/{game_id_str}")

@@ -2,7 +2,7 @@ import os.path
 from typing import List, Set
 from bson import ObjectId
 from fastapi import UploadFile, HTTPException, status
-from dto.game_dto import GameDto, GameDtoCreate, GameDtoUpdate
+from dto.game_dto import GameDto, GameDtoCreate, GameDtoUpdate, GameDtoShort
 from repositories.game_repository import GameRepository, get_game_downloadable_by_name, get_image_by_name
 from repositories.review_repository import ReviewRepository
 
@@ -17,7 +17,8 @@ class GameService:
 
     async def get_all_games(self) -> List[GameDto]:
         games = await self.game_repository.get_games()
-        return [await GameDto.from_game(game, self.review_repository) for game in games]
+        return sorted([await GameDto.from_game(game, self.review_repository) for game in games],
+                      key=lambda game_dto: game_dto.release_date, reverse=True)
 
     async def get_game_by_id(self, game_id: ObjectId) -> GameDto:
         game = await self.game_repository.get_game_by_id(game_id)
@@ -25,6 +26,13 @@ class GameService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"Game with ID: {game_id} not found.")
         return await GameDto.from_game(game, self.review_repository)
+
+    async def get_game_by_id_short(self, game_id: ObjectId) -> GameDtoShort:
+        game = await self.game_repository.get_game_by_id(game_id)
+        if not game:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"Game with ID: {game_id} not found.")
+        return await GameDtoShort.from_game(game)
 
     async def get_game_by_name_and_dev(self, name: str, dev: str) -> GameDto:
         game = await self.game_repository.get_game_by_name_and_dev(name, dev)
@@ -102,10 +110,6 @@ class GameService:
         if not game:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"Game with ID: {game_id} not found.")
-        # if not file.content_type.startswith("image/"):
-        #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-        #                         detail="Uploaded file is not an image.")
-
         return await self.game_repository.upload_game_file(file, game_id)
 
     async def delete_game(self, game_id: ObjectId) -> GameDto:
