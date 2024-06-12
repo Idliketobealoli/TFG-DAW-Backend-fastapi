@@ -60,6 +60,7 @@ class ReviewDtoCreate(BaseModel):
             id=ObjectId(),
             game_id=ObjectId(self.game_id),
             user_id=ObjectId(self.user_id),
+            publish_date=datetime.datetime.now(),
             rating=self.rating,
             description=self.description
         )
