@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Query, UploadFile, File, HTTPException, status, Depends
 from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordBearer
-
 from services.authentication_service import check_role
 from services.game_service import GameService, get_showcase_image
 from dto.game_dto import GameDtoCreate, GameDtoUpdate
@@ -132,3 +131,15 @@ async def download_game_by_id(game_id_str: str, user_id: str, token: str = Depen
 async def upload_game_by_id(game_id_str: str, file: UploadFile = File(...), token: str = Depends(oauth2_scheme)):
     check_role(["ADMIN"], token)
     return await game_service.upload_game_file(ObjectId(game_id_str), file)
+
+
+@game_routes.get("/genres")
+def get_genres(token: str = Depends(oauth2_scheme)):
+    check_role(["ADMIN", "USER"], token)
+    return list(Genre)
+
+
+@game_routes.get("/languages")
+def get_languages(token: str = Depends(oauth2_scheme)):
+    check_role(["ADMIN", "USER"], token)
+    return list(Language)

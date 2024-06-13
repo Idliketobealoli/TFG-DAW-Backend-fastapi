@@ -72,8 +72,8 @@ class GameDtoCreate(BaseModel):
     name: str
     developer: str
     publisher: str
-    genres: Set[Genre]
-    languages: Set[Language]
+    genres: list[Genre]
+    languages: list[Language]
     description: str
     release_date: SkipValidation[datetime]
 
@@ -128,8 +128,8 @@ class GameDtoUpdate(BaseModel):
     developer: Optional[str]
     publisher: Optional[str]
     price: Optional[float]
-    genres: Optional[Set[Genre]]
-    languages: Optional[Set[Language]]
+    genres: Optional[list[Genre]]
+    languages: Optional[list[Language]]
     description: Optional[str]
 
     def validate_fields(self):

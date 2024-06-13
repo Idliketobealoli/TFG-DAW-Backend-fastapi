@@ -130,6 +130,8 @@ class GameService:
                                 detail=f"Game with ID: {game_id} not found.")
         file = get_game_downloadable_by_name(game.file)
         if os.path.isfile(file):
+            game.sell_number += 1
+            await self.game_repository.update_game(game_id, game.dict())
             return file
         else:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,

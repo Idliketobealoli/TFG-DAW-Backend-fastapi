@@ -84,5 +84,4 @@ async def post_review(review: ReviewDtoCreate, token: str = Depends(oauth2_schem
 
 @review_routes.delete("/reviews/{review_id_str}")
 async def delete_review_by_id(review_id_str: str, token: str = Depends(oauth2_scheme)):
-    check_role_and_myself(["ADMIN", "USER"], token, review_id_str)
-    return await review_service.delete_review(ObjectId(review_id_str))
+    return await review_service.delete_review(ObjectId(review_id_str), token)
