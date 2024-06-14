@@ -41,4 +41,5 @@ class LibraryService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"Library with ID: {library_id} not found.")
 
+        print(len(library.game_ids))
         return any(gameId == game_id for gameId in library.game_ids)

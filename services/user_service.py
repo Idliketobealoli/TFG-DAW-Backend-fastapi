@@ -1,16 +1,26 @@
 from typing import List
 from bson import ObjectId
 from fastapi import UploadFile, HTTPException, status
-from dto.user_dto import UserDto, UserDtoCreate, UserDtoUpdate, UserDtoShort
+from dto.user_dto import UserDto, UserDtoCreate, UserDtoUpdate, UserDtoShort, UserDtoLogin, UserDtoToken
 from repositories.library_repository import LibraryRepository
 from repositories.user_repository import UserRepository, get_pfp_by_name
 from repositories.wishlist_repository import WishlistRepository
+from services import authentication_service, cipher_service
 
 
 class UserService:
     user_repository = UserRepository()
     library_repository = LibraryRepository()
     wishlist_repository = WishlistRepository()
+
+    async def login(self, user: UserDtoLogin):
+        user_from_db = await self.user_repository.get_user_by_username(user.username)
+        if user_from_db is None or not cipher_service.match(user.password, user_from_db.password):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail=f"Unauthorized.")
+
+        token = authentication_service.create_access_token(user_from_db)
+        return UserDtoToken(user=await UserDto.from_user(user_from_db), token=token)
 
     async def get_all_users(self) -> List[UserDto]:
         users = await self.user_repository.get_users()
@@ -41,14 +51,21 @@ class UserService:
                                 detail=f"User with ID: {user_id} not found.")
         return get_pfp_by_name(user.profile_picture)
 
-    async def create_user(self, user_dto: UserDtoCreate) -> UserDto:
+    async def create_user(self, user_dto: UserDtoCreate) -> UserDtoToken:
+        user_from_db = await self.user_repository.user_exists_by_username_or_email(user_dto.username, user_dto.email)
+        if user_from_db:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"User with username ${user_dto.username} or email ${user_dto.email} already "
+                                       f"exists.")
         user = await self.user_repository.create_user(user_dto.to_user())
         if not user:
             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                                 detail=f"There was an error when creating user: {user_dto.name} {user_dto.surname}.")
         await self.library_repository.create_library(user.id)
         await self.wishlist_repository.create_wishlist(user.id)
-        return await UserDto.from_user(user)
+
+        token = authentication_service.create_access_token(user)
+        return UserDtoToken(user=await UserDto.from_user(user), token=token)
 
     async def update_user(self, user_id: ObjectId, user_dto: UserDtoUpdate) -> UserDto:
         user = await self.user_repository.get_user_by_id(user_id)

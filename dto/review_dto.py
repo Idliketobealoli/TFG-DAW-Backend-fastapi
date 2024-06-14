@@ -36,8 +36,8 @@ class ReviewDto(BaseModel):
 
 
 class ReviewDtoCreate(BaseModel):
-    game_id: ObjectId
-    user_id: ObjectId
+    game_id: str
+    user_id: str
     rating: float
     description: str
 
@@ -58,8 +58,9 @@ class ReviewDtoCreate(BaseModel):
     def to_review(self):
         return Review(
             id=ObjectId(),
-            game_id=self.game_id,
-            user_id=self.user_id,
+            game_id=ObjectId(self.game_id),
+            user_id=ObjectId(self.user_id),
+            publish_date=datetime.datetime.now(),
             rating=self.rating,
             description=self.description
         )

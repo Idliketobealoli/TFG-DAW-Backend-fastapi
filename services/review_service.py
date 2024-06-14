@@ -5,6 +5,7 @@ from dto.review_dto import ReviewDto, ReviewDtoCreate, ReviewDtoUpdate
 from repositories.game_repository import GameRepository
 from repositories.review_repository import ReviewRepository
 from repositories.user_repository import UserRepository
+from services.authentication_service import check_role_and_myself
 
 
 class ReviewService:
@@ -60,9 +61,11 @@ class ReviewService:
                                        f"{review_dto.user_id} and game with ID: {review_dto.game_id}.")
         return await ReviewDto.from_review(updated_review, self.user_repository, self.game_repository)
 
-    async def delete_review(self, review_id: ObjectId) -> bool:
+    async def delete_review(self, review_id: ObjectId, token: str) -> bool:
         review = await self.get_review_by_id(review_id)
         if not review:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"Review with ID: {review_id} not found.")
+
+        check_role_and_myself(["ADMIN", "USER"], token, review.user.id)
         return await self.review_repository.delete_review(review_id)
