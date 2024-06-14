@@ -18,11 +18,6 @@ def hello_world():
     return "hello world!"
 
 
-@user_routes.post("/prueba2")
-def hello_world(user: UserDtoLogin):
-    return '{"token": "hello world! '+user.username+' - '+user.password+'"}'
-
-
 @user_routes.get("/users")
 async def get_all_users(active: Optional[bool] = Query(None), token: str = Depends(oauth2_scheme)):
     check_role(["ADMIN"], token)

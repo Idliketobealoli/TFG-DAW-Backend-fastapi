@@ -23,7 +23,7 @@ async def get_wishlist_by_id(wishlist_id_str: str, token: str = Depends(oauth2_s
 
 
 @wishlist_routes.get("/wishlists/exists/{user_id}")
-async def get_wishlist_by_id(user_id: str, game_id: str, token: str = Depends(oauth2_scheme)):
+async def wishlist_exists_by_id(user_id: str, game_id: str, token: str = Depends(oauth2_scheme)):
     check_role_and_myself(["ADMIN", "USER"], token, user_id)
     wishlist = await wishlist_service.get_wishlist_by_id(ObjectId(user_id))
     game_exists = any(game.id.__str__() == game_id for game in wishlist.games)
