@@ -15,23 +15,24 @@ class ReviewService:
 
     async def get_all_reviews(self) -> List[ReviewDto]:
         reviews = await self.review_repository.get_reviews()
-        return [await ReviewDto.from_review(review, self.user_repository, self.game_repository)
+        return [await ReviewDto.from_review(review, self.user_repository, self.game_repository, self.review_repository)
                 for review in sorted(reviews, key=lambda r: r.publish_date)]
     
     async def get_all_reviews_from_user(self, user_id: ObjectId) -> List[ReviewDto]:
         reviews = await self.review_repository.get_reviews_from_user(user_id)
-        return [await ReviewDto.from_review(review, self.user_repository, self.game_repository)
+        return [await ReviewDto.from_review(review, self.user_repository, self.game_repository, self.review_repository)
                 for review in sorted(reviews, key=lambda r: r.publish_date)]
 
     async def get_review_from_user_and_game(self, user_id: ObjectId, game_id: ObjectId) -> Optional[ReviewDto]:
         review = await self.review_repository.get_reviews_from_user_and_game(user_id, game_id)
         if review:
-            return await ReviewDto.from_review(review, self.user_repository, self.game_repository)
+            return await ReviewDto.from_review(review, self.user_repository, self.game_repository,
+                                               self.review_repository)
         return None
 
     async def get_all_reviews_from_game(self, game_id: ObjectId) -> List[ReviewDto]:
         reviews = await self.review_repository.get_reviews_from_game(game_id)
-        return [await ReviewDto.from_review(review, self.user_repository, self.game_repository)
+        return [await ReviewDto.from_review(review, self.user_repository, self.game_repository, self.review_repository)
                 for review in sorted(reviews, key=lambda r: r.publish_date)]
 
     async def get_review_by_id(self, review_id: ObjectId) -> ReviewDto:
@@ -39,7 +40,7 @@ class ReviewService:
         if not review:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"Review with ID: {review_id} not found.")
-        return await ReviewDto.from_review(review, self.user_repository, self.game_repository)
+        return await ReviewDto.from_review(review, self.user_repository, self.game_repository, self.review_repository)
 
     async def create_review(self, review_dto: ReviewDtoCreate) -> ReviewDto:
         review = await self.review_repository.create_review(review_dto.to_review())
@@ -47,7 +48,7 @@ class ReviewService:
             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                                 detail=f"There was an error when creating review for user with ID: "
                                        f"{review_dto.user_id} and game with ID: {review_dto.game_id}.")
-        return await ReviewDto.from_review(review, self.user_repository, self.game_repository)
+        return await ReviewDto.from_review(review, self.user_repository, self.game_repository, self.review_repository)
 
     async def update_review(self, review_id: ObjectId, review_dto: ReviewDtoUpdate) -> ReviewDto:
         review = await self.review_repository.get_review_by_id(review_id)
@@ -59,7 +60,8 @@ class ReviewService:
             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                                 detail=f"There was an error when creating review for user with ID: "
                                        f"{review_dto.user_id} and game with ID: {review_dto.game_id}.")
-        return await ReviewDto.from_review(updated_review, self.user_repository, self.game_repository)
+        return await ReviewDto.from_review(updated_review, self.user_repository,
+                                           self.game_repository, self.review_repository)
 
     async def delete_review(self, review_id: ObjectId, token: str) -> bool:
         review = await self.get_review_by_id(review_id)

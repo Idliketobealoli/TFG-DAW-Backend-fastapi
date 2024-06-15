@@ -6,7 +6,6 @@ from starlette import status
 from starlette.exceptions import HTTPException
 from model.user import User
 
-# Secret key to encode and decode the JWT
 SECRET_KEY = config("SECRET_KEY", default="El_br4inr0t_de_Jujutsu_Ka1sen_me_ha_c0nsum1do_la_v1d4")
 
 

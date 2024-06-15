@@ -23,6 +23,7 @@ async def get_library_by_id(library_id_str: str, token: str = Depends(oauth2_sch
     return await library_service.get_library_by_id(ObjectId(library_id_str))
 
 
+# ESTE ENDPOINT SE PUEDE ELIMINAR
 @library_routes.put("/libraries/add_game/{library_id_str}")
 async def add_to_library(library_id_str: str, game_id_str: str, token: str = Depends(oauth2_scheme)):
     check_role_and_myself(["ADMIN", "USER"], token, library_id_str)

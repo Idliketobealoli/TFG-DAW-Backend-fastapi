@@ -32,7 +32,7 @@ class GameService:
         if not game:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"Game with ID: {game_id} not found.")
-        return await GameDtoShort.from_game(game)
+        return await GameDtoShort.from_game(game, self.review_repository)
 
     async def get_game_by_name_and_dev(self, name: str, dev: str) -> GameDto:
         game = await self.game_repository.get_game_by_name_and_dev(name, dev)

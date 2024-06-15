@@ -55,15 +55,25 @@ class GameDtoShort(BaseModel):
     name: str
     developer: str
     publisher: str
+    rating: float
+    description: str
     price: float
 
     @classmethod
-    async def from_game(cls, game: Game):
+    async def from_game(cls, game: Game, review_repository: ReviewRepository):
+        reviews = await review_repository.get_reviews_from_game(game.id)
+        rating = 0
+
+        if reviews:
+            rating = round(sum(review.rating for review in reviews) / len(reviews), 2)
+
         return GameDtoShort(
             id=str(game.id),
             name=game.name,
             developer=game.developer,
             publisher=game.publisher,
+            rating=rating,
+            description=game.description,
             price=game.price
         )
 
