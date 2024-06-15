@@ -6,6 +6,7 @@ from dto.game_dto import GameDtoShort
 from dto.user_dto import UserDtoShort
 from model.review import Review
 from repositories.game_repository import GameRepository
+from repositories.review_repository import ReviewRepository
 from repositories.user_repository import UserRepository
 from typing import Optional
 
@@ -19,12 +20,13 @@ class ReviewDto(BaseModel):
     description: str
 
     @classmethod
-    async def from_review(cls, review: Review, user_repository: UserRepository, game_repository: GameRepository):
+    async def from_review(cls, review: Review, user_repository: UserRepository, game_repository: GameRepository,
+                          review_repository: ReviewRepository):
         game_model = await game_repository.get_game_by_id(review.game_id)
         user_model = await user_repository.get_user_by_id(review.user_id)
         return ReviewDto(
             id=str(review.id),
-            game=await GameDtoShort.from_game(game_model),
+            game=await GameDtoShort.from_game(game_model, review_repository),
             user=await UserDtoShort.from_user(user_model),
             publish_date=review.publish_date,
             rating=review.rating,

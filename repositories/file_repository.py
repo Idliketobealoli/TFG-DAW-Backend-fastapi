@@ -9,6 +9,10 @@ def get_resources_directory() -> str:
     # Y una vez que la tenemos, navegamos por los padres hasta encontrar la carpeta resources
     while not os.path.isdir(os.path.join(current_file, "resources")):
         current_file = os.path.dirname(current_file)
+
+    # En caso de mover la carpeta resources a una ubicación fuera del proyecto,
+    # descomentar la línea de abajo y cambiar "PATH" por la uri deseada.
+    # current_file = "PATH"
     return os.path.join(current_file, "resources")
 
 

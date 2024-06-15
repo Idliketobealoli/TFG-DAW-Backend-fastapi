@@ -11,7 +11,8 @@ class Wishlist(BaseModel):
             self.game_ids.append(game_id)
 
     def remove_from_wishlist(self, game_id: ObjectId):
-        self.game_ids.remove(game_id)
+        if game_id in self.game_ids:
+            self.game_ids.remove(game_id)
 
     class Config:
         arbitrary_types_allowed = True
