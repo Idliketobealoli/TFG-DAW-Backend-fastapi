@@ -54,7 +54,9 @@ async def load_games():
                          "and join a mysterious, untouchable girl to fight your oppressors. Experience a tale of "
                          "liberation, featuring characters with next-gen graphical expressiveness!",
              release_date=datetime.datetime(2021, 9, 10), sell_number=30_000_000, price=39.99,
-             main_image="60a7b2f7c0f2b441d4f6e9b4.jpg"),
+             main_image="60a7b2f7c0f2b441d4f6e9b4.jpg",
+             showcase_images=["60a7b2f7c0f2b441d4f6e9b4-showcase1", "60a7b2f7c0f2b441d4f6e9b4-showcase2",
+                              "60a7b2f7c0f2b441d4f6e9b4-showcase3", "60a7b2f7c0f2b441d4f6e9b4-showcase4"]),
 
         Game(id=ObjectId("60a7b2f7c0f2b441d4f6e9b5"), name="Scarlet Nexus", developer="Bandai Namco Studios Inc",
              publisher="Bandai Namco Entertainment",
@@ -215,5 +217,5 @@ async def load_wishlists():
 
         # Después, iteramos entre 0 y N veces, donde N es el último índice de la lista.
         # Así, puede que haya usuarios sin juegos en la wishlist, y otros con X juegos.
-        for i in range(random.randint(0, len(games)-1)):
+        for i in range(random.randint(0, len(games) - 1)):
             await wishlist_service.add_to_wishlist(user.id, games[i].id)
