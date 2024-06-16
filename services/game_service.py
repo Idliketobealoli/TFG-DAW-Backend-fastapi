@@ -34,11 +34,10 @@ class GameService:
                                 detail=f"Game with ID: {game_id} not found.")
         return await GameDtoShort.from_game(game, self.review_repository)
 
-    async def get_game_by_name_and_dev(self, name: str, dev: str) -> GameDto:
+    async def get_game_by_name_and_dev(self, name: str, dev: str) -> GameDto | None:
         game = await self.game_repository.get_game_by_name_and_dev(name, dev)
         if not game:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail=f"Game with name: {name} and dev: {dev} not found.")
+            return None
         return await GameDto.from_game(game, self.review_repository)
 
     async def create_game(self, game_dto: GameDtoCreate) -> GameDto:
@@ -47,6 +46,7 @@ class GameService:
             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                                 detail=f"There was an error when creating game: {game_dto.name} -"
                                        f" {game_dto.developer}.")
+        print("ha creado el juego")
         return await GameDto.from_game(game, self.review_repository)
 
     async def update_game(self, game_id: ObjectId, game_dto: GameDtoUpdate) -> GameDto:
