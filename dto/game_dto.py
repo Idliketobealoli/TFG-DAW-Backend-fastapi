@@ -3,7 +3,7 @@ from pydantic import BaseModel, SkipValidation
 from fastapi import HTTPException, status
 import datetime
 from typing import Set, Optional
-from model.game import Genre, Language, Game
+from model.game import Genre, Language, Game, transform_genres, transform_languages
 from repositories.review_repository import ReviewRepository
 
 
@@ -82,10 +82,11 @@ class GameDtoCreate(BaseModel):
     name: str
     developer: str
     publisher: str
-    genres: list[Genre]
-    languages: list[Language]
+    genres: list[str]
+    languages: list[str]
     description: str
-    release_date: SkipValidation[datetime]
+    release_date: str
+    price: float
 
     def validate_fields(self):
         if len(self.name) < 2:
@@ -112,21 +113,30 @@ class GameDtoCreate(BaseModel):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Description must be longer than 9 characters: {self.description}")
 
-        if datetime.datetime.fromisoformat(self.release_date.__str__()) > datetime.datetime.today():
+        if datetime.datetime.fromisoformat(self.release_date) > datetime.datetime.today():
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Release date must not be in the future.")
+
+        if self.price <= 0:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Price must be higher than 0.")
+
         return
 
     def to_game(self):
+        genres_list = transform_genres(self.genres)
+        languages_list = transform_languages(self.languages)
+
         return Game(
             id=ObjectId(),
             name=self.name,
             developer=self.developer,
             publisher=self.publisher,
-            genres=self.genres,
-            languages=self.languages,
+            genres=genres_list,
+            languages=languages_list,
             description=self.description,
-            release_date=self.release_date
+            release_date=datetime.datetime.fromisoformat(self.release_date),
+            price=self.price
         )
 
     class Config:
@@ -155,7 +165,7 @@ class GameDtoUpdate(BaseModel):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Publisher name must be longer than 4 characters: {self.publisher}")
 
-        if self.price is not None and self.price < 0:
+        if self.price is not None and self.price <= 0:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Price must be a positive number: {self.publisher}")
 

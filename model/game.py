@@ -1,4 +1,6 @@
 from enum import Enum
+from typing import List
+from fastapi import HTTPException, status
 from pydantic import BaseModel, SkipValidation, Field
 from bson import ObjectId
 import datetime
@@ -29,6 +31,17 @@ class Genre(str, Enum):
     SOULSLIKE = "Souls-like"
 
 
+def transform_genres(genres: List[str]) -> List[Genre]:
+    transformed_genres = []
+    for genre in genres:
+        try:
+            transformed_genres.append(Genre(genre))
+        except ValueError:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Unexpected genre.")
+    return transformed_genres
+
+
 class Language(str, Enum):
     ES = "Spanish"
     EN = "English"
@@ -43,8 +56,18 @@ class Language(str, Enum):
     PG = "Portuguese"
 
 
+def transform_languages(languages: List[str]) -> List[Language]:
+    transformed_languages = []
+    for language in languages:
+        try:
+            transformed_languages.append(Language(language))
+        except ValueError:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Unexpected language.")
+    return transformed_languages
+
+
 class Game(BaseModel):
-    # Añadir price
     id: ObjectId
     name: str
     developer: str
