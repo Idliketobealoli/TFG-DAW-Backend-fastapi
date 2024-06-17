@@ -55,7 +55,7 @@ class GameRepository:
         filename, _ = os.path.splitext(file.filename)
         image = await file_repository.upload_file(file, "game_images",
                                                   f"{str(game_id)}-showcase{filename}")
-        game.game_showcase_images.add(image)
+        game.game_showcase_images.append(image)
         await self.collection.update_one({"id": game.dict().pop('id', None)},
                                          {"$set": game.dict()})  # Si no funciona, cambiar por _id
         return True
