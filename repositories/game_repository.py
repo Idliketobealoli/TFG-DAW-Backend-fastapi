@@ -37,10 +37,7 @@ class GameRepository:
 
     async def create_game(self, game: Game) -> Optional[Game]:
         await self.collection.insert_one(game.dict())
-        print("ha insertado el juego")
-        print("ID autogenerado: " + str(game.id))
         res = await self.get_game_by_id(game.id)
-        print("result: " + str(res.id))
         return res
 
     async def update_game(self, game_id: ObjectId, game_data: dict) -> Optional[Game]:

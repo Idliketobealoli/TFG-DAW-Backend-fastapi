@@ -55,7 +55,6 @@ def delete_file(path_from_resources: str) -> bool:
 
 def get_file_full_path(directory: str, name: str) -> str:
     path = os.path.join(get_resources_directory(), directory, name)
-    print(path)
     if os.path.isfile(path):
         return path
     else:

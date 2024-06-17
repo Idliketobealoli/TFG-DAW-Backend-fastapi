@@ -46,7 +46,6 @@ class GameService:
             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                                 detail=f"There was an error when creating game: {game_dto.name} -"
                                        f" {game_dto.developer}.")
-        print("ha creado el juego")
         return await GameDto.from_game(game, self.review_repository)
 
     async def update_game(self, game_id: ObjectId, game_dto: GameDtoUpdate) -> GameDto:
