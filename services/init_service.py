@@ -21,6 +21,9 @@ wishlist_service = WishlistService()
 
 
 async def load_games():
+    """
+    Función encargada de generar los juegos por defecto de la aplicación.
+    """
     initial_games = [
         Game(id=ObjectId("60a7b2f7c0f2b441d4f6e9b1"), name="Dark Souls", developer="From Software",
              publisher="From Software",
@@ -119,6 +122,9 @@ async def load_games():
 
 
 async def load_users():
+    """
+    Función encargada de generar los usuarios por defecto de la aplicación.
+    """
     initial_users = [
         User(id=ObjectId("60a7b2f7c0f2b441d4f6e9a1"), name="Marina Guanghua", surname="Pintado", username="darkhuo10",
              email="admin1@gmail.com", password=encode("admin1234"), birthdate=datetime.datetime(2003, 12, 10),
@@ -145,12 +151,19 @@ async def load_users():
 
 
 async def create_user_with_library_and_wishlist(user):
+    """
+    Función encargada de insertar en la base de datos el usuario pasado por parámetro,
+    y además crear su librería y lista de deseados.
+    """
     await user_repository.create_user(user)
     await wishlist_repository.create_wishlist(user.id)
     await library_repository.create_library(user.id)
 
 
 async def load_reviews():
+    """
+    Función encargada de generar las reviews por defecto de la aplicación.
+    """
     initial_reviews = [
         Review(id=ObjectId(), game_id=ObjectId("60a7b2f7c0f2b441d4f6e9b9"),
                user_id=ObjectId("60a7b2f7c0f2b441d4f6e9a2"), rating=4,
@@ -205,6 +218,9 @@ async def load_reviews():
 
 
 async def load_wishlists():
+    """
+    Función encargada de cargar un número aleatorio de juegos (aleatorios) en la lista de deseados de cada usuario.
+    """
     users = await user_repository.get_users()
     games = await game_repository.get_games()
 

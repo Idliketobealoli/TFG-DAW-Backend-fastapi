@@ -84,4 +84,6 @@ async def post_review(review: ReviewDtoCreate, token: str = Depends(oauth2_schem
 
 @review_routes.delete("/reviews/{review_id_str}")
 async def delete_review_by_id(review_id_str: str, token: str = Depends(oauth2_scheme)):
+    # ES NECESARIO LLEVARSE EL TOKEN A DENTRO DEL MÉTODO DEL SERVICIO PORQUE PARA CHEQUEAR SI ERES EL MISMO
+    # USUARIO QUE EL QUE HIZO LA REVIEW PRIMERO TIENES QUE BUSCAR LA REVIEW POR ID.
     return await review_service.delete_review(ObjectId(review_id_str), token)
