@@ -70,6 +70,6 @@ class UserRepository:
         user = await self.get_user_by_id(user_id)
         if not user:
             return None
-        user.active = False
-        await self.collection.update_one({"id": user.dict().pop('id', None)}, {"$set": user.dict()})  # Lo mismo aqui
+        user.active = not user.active
+        await self.collection.update_one({"id": user.dict().pop('id', None)}, {"$set": user.dict()})
         return await self.get_user_by_id(user_id)
