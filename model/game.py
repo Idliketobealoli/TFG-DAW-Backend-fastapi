@@ -1,8 +1,9 @@
 from enum import Enum
-from pydantic import BaseModel
+from typing import List
+from fastapi import HTTPException, status
+from pydantic import BaseModel, SkipValidation, Field
 from bson import ObjectId
 import datetime
-from typing import Set
 
 
 class Genre(str, Enum):
@@ -30,6 +31,22 @@ class Genre(str, Enum):
     SOULSLIKE = "Souls-like"
 
 
+def transform_genres(genres: List[str]) -> List[Genre]:
+    """
+    Función para, dada una lista de strings, transformarlos en Enums de géneros.
+    :param genres: Lista de Strings de los géneros.
+    :return: Lista de Enums de géneros, o error 400 si alguno no tiene el formato correcto.
+    """
+    transformed_genres = []
+    for genre in genres:
+        try:
+            transformed_genres.append(Genre(genre))
+        except ValueError:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Unexpected genre.")
+    return transformed_genres
+
+
 class Language(str, Enum):
     ES = "Spanish"
     EN = "English"
@@ -44,14 +61,37 @@ class Language(str, Enum):
     PG = "Portuguese"
 
 
+def transform_languages(languages: List[str]) -> List[Language]:
+    """
+    Función para, dada una lista de strings, transformarlos en Enums de lenguajes.
+    :param languages: Lista de Strings de los lenguajes.
+    :return: Lista de Enums de lenguajes, o error 400 si alguno no tiene el formato correcto.
+    """
+    transformed_languages = []
+    for language in languages:
+        try:
+            transformed_languages.append(Language(language))
+        except ValueError:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Unexpected language.")
+    return transformed_languages
+
+
 class Game(BaseModel):
     id: ObjectId
     name: str
     developer: str
     publisher: str
-    genres: Set[Genre]
-    languages: Set[Language]
-    rating: float
+    genres: [Genre]
+    languages: [Language]
     description: str
-    release_date: datetime
-    sell_number: int
+    price: float
+    release_date: SkipValidation[datetime] = Field(default=datetime.datetime.now())
+    sell_number: int = Field(default=0)
+    main_image: str = Field(default="base.png")
+    game_showcase_images: [str] = Field(default=[])
+    file: str = Field(default="")
+    visible: bool = Field(default=True)
+
+    class Config:
+        arbitrary_types_allowed = True
