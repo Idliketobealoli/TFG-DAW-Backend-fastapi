@@ -58,8 +58,8 @@ async def load_games():
                          "liberation, featuring characters with next-gen graphical expressiveness!",
              release_date=datetime.datetime(2021, 9, 10), sell_number=30_000_000, price=39.99,
              main_image="60a7b2f7c0f2b441d4f6e9b4.jpg",
-             showcase_images=["60a7b2f7c0f2b441d4f6e9b4-showcase1", "60a7b2f7c0f2b441d4f6e9b4-showcase2",
-                              "60a7b2f7c0f2b441d4f6e9b4-showcase3", "60a7b2f7c0f2b441d4f6e9b4-showcase4"]),
+             game_showcase_images=["60a7b2f7c0f2b441d4f6e9b4-showcase1.jpg", "60a7b2f7c0f2b441d4f6e9b4-showcase2.jpg",
+                                   "60a7b2f7c0f2b441d4f6e9b4-showcase3.jpg", "60a7b2f7c0f2b441d4f6e9b4-showcase4.jpg"]),
 
         Game(id=ObjectId("60a7b2f7c0f2b441d4f6e9b5"), name="Scarlet Nexus", developer="Bandai Namco Studios Inc",
              publisher="Bandai Namco Entertainment",
