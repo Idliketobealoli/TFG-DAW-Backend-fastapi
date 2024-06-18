@@ -119,34 +119,34 @@ class UserDtoUpdate(BaseModel):
     birthdate: Optional[str]
 
     def validate_fields(self):
-        if self.name is not None and len(self.name) < 2:
+        if self.name is not None and self.name is not "" and len(self.name) < 2:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Name must be longer than 1 character: {self.name}")
 
-        if self.surname is not None and len(self.surname) < 5:
+        if self.surname is not None and self.surname is not "" and len(self.surname) < 5:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Surname must be longer than 4 character: {self.surname}")
 
-        if self.password is not None and len(self.password) < 6:
+        if self.password is not None and self.password is not "" and len(self.password) < 6:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Password must be at least 6 characters long.")
 
-        if (self.birthdate is not None and
+        if (self.birthdate is not None and self.birthdate is not "" and
                 datetime.datetime.fromisoformat(self.birthdate) > datetime.datetime.today()):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Birthdate must not be in the future.")
         return
 
     def to_user(self, user: User):
-        if self.name is None:
+        if self.name is None or self.name is "":
             self.name = user.name
-        if self.surname is None:
+        if self.surname is None or self.surname is "":
             self.surname = user.surname
-        if self.password is None:  # en este caso no debemos cifrarla porque ya está cifrada
+        if self.password is None or self.password is "":  # en este caso no debemos cifrarla porque ya está cifrada
             passwd = user.password
         else:  # en este caso si la ciframos
             passwd = encode(self.password)
-        if self.birthdate is None:
+        if self.birthdate is None or self.birthdate is "":
             b_date = user.birthdate
         else:
             b_date = datetime.datetime.fromisoformat(self.birthdate)

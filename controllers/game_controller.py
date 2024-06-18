@@ -135,7 +135,7 @@ async def put_game_showcases(game_id_str: str, files: List[UploadFile] = File(..
     return await game_service.upload_showcase_images(ObjectId(game_id_str), set(files))
 
 
-@game_routes.put("/games/clear_showcase_imgs/{game_id_str}")
+@game_routes.delete("/games/clear_showcase_imgs/{game_id_str}")
 async def clear_game_showcases(game_id_str: str, token: str = Depends(oauth2_scheme)):
     """
     Endpoint para borrar todas las imágenes de la lista de imágenes de muestra de un juego.
@@ -143,6 +143,7 @@ async def clear_game_showcases(game_id_str: str, token: str = Depends(oauth2_sch
     :param token: Token del usuario.
     :return: True si fueron eliminadas con éxito, False si no se pudieron eliminar o una Response de error.
     """
+    print("entra")
     check_role(["ADMIN"], token)
     return await game_service.clear_showcase_images(ObjectId(game_id_str))
 

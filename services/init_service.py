@@ -80,7 +80,11 @@ async def load_games():
                          El juego se ambienta en un nuevo mundo, Fódlan, donde la Iglesia de Seiros detenta gran poder sobre la tierra y sus gentes.
                          Tu protagonista se encontrará con tres personajes —Edelgard, Dimitri y Claude— que desempeñan importantes papeles en la historia.""",
              release_date=datetime.datetime(2019, 7, 26), sell_number=20_000_000, price=59.99,
-             main_image="60a7b2f7c0f2b441d4f6e9b6.jpg"),
+             main_image="60a7b2f7c0f2b441d4f6e9b6.jpg",
+             game_showcase_images=["60a7b2f7c0f2b441d4f6e9b6-showcasefe3h-cutscene.jpg",
+                                   "60a7b2f7c0f2b441d4f6e9b6-showcasefe3h.avif",
+                                   "60a7b2f7c0f2b441d4f6e9b6-showcasefe3h-cutscene2.webp",
+                                   "60a7b2f7c0f2b441d4f6e9b6-showcasefe3h-cutscene3.jpg"]),
 
         Game(id=ObjectId("60a7b2f7c0f2b441d4f6e9b7"), name="Left 4 Dead 2", developer="Valve",
              publisher="Valve",

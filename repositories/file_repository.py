@@ -59,14 +59,13 @@ def delete_file(path_from_resources: str) -> bool:
     """
     Función para borrar un archivo dentro del directorio de resources.
     :param path_from_resources: Ruta relativa desde resources hasta el archivo a borrar.
-    :return: True si fue borrado con éxito, 404 si no se encontró el archivo o 500 si no se puedo borrar.
+    :return: True si fue borrado con éxito, False si no se encontró el archivo o 500 si no se puedo borrar.
     """
     try:
         os.remove(os.path.join(get_resources_directory(), path_from_resources))
         return True
     except FileNotFoundError:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"File not found for path: {path_from_resources}")
+        return False
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Exception while retrieving file: {e}")

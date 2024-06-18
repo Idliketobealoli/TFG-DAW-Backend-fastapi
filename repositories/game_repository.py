@@ -81,8 +81,7 @@ class GameRepository:
         game = await self.get_game_by_id(game_id)
         if not game:
             return None
-        await self.collection.update_one({"id": game.dict().pop('id', None)},
-                                         {"$set": game_data})
+        await self.collection.update_one({"id": game.dict().pop('id', None)}, {"$set": game_data})
         return await self.get_game_by_id(game_id)
 
     async def upload_showcase_image(self, file: UploadFile, game_id: ObjectId) -> bool:
