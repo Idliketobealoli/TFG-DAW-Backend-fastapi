@@ -4,9 +4,15 @@ from fastapi import HTTPException, status, UploadFile
 
 
 def get_resources_directory() -> str:
-    # Cogemos la ruta de este archivo
+    """
+    Función para obtener la ruta de la carpeta donde se encuentran
+    las fotos de perfil, fotos de juegos y archivos de juegos.
+    :return: String con la ruta absoluta de la carpeta de resources.
+    """
+
+    # Cogemos la ruta de este archivo.
     current_file = os.path.abspath(__file__)
-    # Y una vez que la tenemos, navegamos por los padres hasta encontrar la carpeta resources
+    # Y una vez que la tenemos, navegamos por los padres hasta encontrar la carpeta resources.
     while not os.path.isdir(os.path.join(current_file, "resources")):
         current_file = os.path.dirname(current_file)
 
@@ -17,6 +23,14 @@ def get_resources_directory() -> str:
 
 
 async def upload_file(file: UploadFile, directory_from_resources: str, image_id: str) -> str:
+    """
+    Función para subir un archivo al directorio dentro de resources que hayamos especificado por parámetro,
+    guardando el archivo con el nombre especificado.
+    :param file: Archivo a guardar.
+    :param directory_from_resources: Ruta relativa desde resources donde vamos a guardar el archivo.
+    :param image_id: Nombre nuevo del archivo.
+    :return: Ruta absoluta del archivo subido, o error 500 si no se pudo subir.
+    """
     _, extension = os.path.splitext(file.filename)
     directory = os.path.join(get_resources_directory(), directory_from_resources)
 
@@ -42,6 +56,11 @@ async def upload_file(file: UploadFile, directory_from_resources: str, image_id:
 
 
 def delete_file(path_from_resources: str) -> bool:
+    """
+    Función para borrar un archivo dentro del directorio de resources.
+    :param path_from_resources: Ruta relativa desde resources hasta el archivo a borrar.
+    :return: True si fue borrado con éxito, 404 si no se encontró el archivo o 500 si no se puedo borrar.
+    """
     try:
         os.remove(os.path.join(get_resources_directory(), path_from_resources))
         return True
@@ -54,6 +73,12 @@ def delete_file(path_from_resources: str) -> bool:
 
 
 def get_file_full_path(directory: str, name: str) -> str:
+    """
+    Función para obtener la ruta absoluta a un archivo ubicado dentro de la carpeta resources.
+    :param directory: Ruta relativa desde resources al directorio donde se ubica el archivo a buscar.
+    :param name: Nombre del archivo a buscar.
+    :return: Ruta absoluta del archivo encontrado, o una por defecto si no existiera.
+    """
     path = os.path.join(get_resources_directory(), directory, name)
     if os.path.isfile(path):
         return path

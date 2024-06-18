@@ -32,6 +32,11 @@ class Genre(str, Enum):
 
 
 def transform_genres(genres: List[str]) -> List[Genre]:
+    """
+    Función para, dada una lista de strings, transformarlos en Enums de géneros.
+    :param genres: Lista de Strings de los géneros.
+    :return: Lista de Enums de géneros, o error 400 si alguno no tiene el formato correcto.
+    """
     transformed_genres = []
     for genre in genres:
         try:
@@ -57,6 +62,11 @@ class Language(str, Enum):
 
 
 def transform_languages(languages: List[str]) -> List[Language]:
+    """
+    Función para, dada una lista de strings, transformarlos en Enums de lenguajes.
+    :param languages: Lista de Strings de los lenguajes.
+    :return: Lista de Enums de lenguajes, o error 400 si alguno no tiene el formato correcto.
+    """
     transformed_languages = []
     for language in languages:
         try:

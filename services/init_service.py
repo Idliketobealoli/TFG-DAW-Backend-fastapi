@@ -224,7 +224,7 @@ async def load_wishlists():
     users = await user_repository.get_users()
     games = await game_repository.get_games()
 
-    # Queremos añadir un numero aleatorio de juegos a la wishlist de cada usuario,
+    # Queremos añadir un número aleatorio de juegos a la wishlist de cada usuario,
     # y que dichos juegos sean aleatorios.
     for user in users:
 
