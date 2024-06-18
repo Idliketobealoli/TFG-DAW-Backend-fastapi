@@ -132,15 +132,15 @@ async def load_users():
     initial_users = [
         User(id=ObjectId("60a7b2f7c0f2b441d4f6e9a1"), name="Marina Guanghua", surname="Pintado", username="darkhuo10",
              email="admin1@gmail.com", password=encode("admin1234"), birthdate=datetime.datetime(2003, 12, 10),
-             role=Role.ADMIN, profile_picture="darkhuo10.png"),
+             role=Role.ADMIN, profile_picture="60a7b2f7c0f2b441d4f6e9a1.png"),
 
         User(id=ObjectId("60a7b2f7c0f2b441d4f6e9a2"), name="Daniel", surname="Rodríguez", username="Idliketobealoli",
              email="admin2@gmail.com", password=encode("loli1707"), birthdate=datetime.datetime(2002, 5, 26),
-             role=Role.ADMIN, profile_picture="Idliketobealoli.png"),
+             role=Role.ADMIN, profile_picture="60a7b2f7c0f2b441d4f6e9a2.png"),
 
         User(id=ObjectId("60a7b2f7c0f2b441d4f6e9a3"), name="User 1", surname="Apellido", username="usuario1",
              email="user1@gmail.com", password=encode("password1"), birthdate=datetime.datetime(2002, 5, 26),
-             profile_picture="asdf.png"),
+             profile_picture="60a7b2f7c0f2b441d4f6e9a3.png"),
 
         User(id=ObjectId("60a7b2f7c0f2b441d4f6e9a4"), name="User 2", surname="Apellido 2", username="usuario2",
              email="user2@gmail.com", password=encode("password2"), birthdate=datetime.datetime(2002, 5, 26)),
