@@ -149,7 +149,7 @@ class GameService:
         :return: True si las imágenes fueron correctamente eliminadas, 404 si el juego no existe o 503 si hubo un error
         a la hora de eliminar las imágenes (como no poder conectar con la base de datos).
         """
-        game = await self.get_game_by_id(game_id)
+        game = await self.game_repository.get_game_by_id(game_id)
         if not game:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"Game with ID: {game_id} not found.")
