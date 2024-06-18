@@ -116,6 +116,7 @@ class UserDtoUpdate(BaseModel):
     name: Optional[str]
     surname: Optional[str]
     password: Optional[str]
+    birthdate: Optional[str]
 
     def validate_fields(self):
         if self.name is not None and len(self.name) < 2:
@@ -129,6 +130,11 @@ class UserDtoUpdate(BaseModel):
         if self.password is not None and len(self.password) < 6:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Password must be at least 6 characters long.")
+
+        if (self.birthdate is not None and
+                datetime.datetime.fromisoformat(self.birthdate) > datetime.datetime.today()):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Birthdate must not be in the future.")
         return
 
     def to_user(self, user: User):
@@ -140,6 +146,10 @@ class UserDtoUpdate(BaseModel):
             passwd = user.password
         else:  # en este caso si la ciframos
             passwd = encode(self.password)
+        if self.birthdate is None:
+            b_date = user.birthdate
+        else:
+            b_date = datetime.datetime.fromisoformat(self.birthdate)
 
         return User(
             id=user.id,
@@ -148,7 +158,7 @@ class UserDtoUpdate(BaseModel):
             username=user.username,
             email=user.email,
             password=passwd,
-            birthdate=user.birthdate,
+            birthdate=b_date,
             role=user.role,
             active=user.active
         )
