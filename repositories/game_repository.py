@@ -145,11 +145,11 @@ class GameRepository:
         game = await self.get_game_by_id(game_id)
         if not game:
             return False
-        image = await file_repository.upload_file(file, "game_downloadables",
-                                                  f"{game.name}-{game.developer}".replace(" ", "_"))
+        image = await file_repository.upload_file(file, "game_downloadables", str(game_id))
         game.file = image
         await self.collection.update_one({"id": game.dict().pop('id', None)},
                                          {"$set": game.dict()})
+        print(game.file)
         return True
 
     async def delete_game(self, game_id: ObjectId) -> Optional[Game]:

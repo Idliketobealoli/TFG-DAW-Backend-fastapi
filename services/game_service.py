@@ -11,8 +11,8 @@ def get_showcase_image(name: str):
     """
     Función que devuelve el path completo de la imágen guardada que coincida con ese nombre,
     o el de una imágen por defecto si no existe.
-    :param name: el nombre de la imágen que queremos.
-    :return: string con la ruta absoluta de la imágen.
+    :param name: El nombre de la imágen que queremos.
+    :return: String con la ruta absoluta de la imágen.
     """
     return get_image_by_name(name)
 
