@@ -41,7 +41,8 @@ async def get_all_games(
     check_role(["ADMIN", "USER"], token)
     games = await game_service.get_all_games()
 
-    if visible:
+    print(visible)
+    if visible is not None:
         games = [game for game in games if visible == game.visible]
 
     if genre:
@@ -62,6 +63,7 @@ async def get_all_games(
     if rating is not None:
         games = [game for game in games if game.rating >= rating]
 
+    print(len(games))
     return games
 
 

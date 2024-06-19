@@ -169,13 +169,13 @@ class GameDtoUpdate(BaseModel):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"Price must be a positive number: {self.publisher}")
 
-        if self.genres is not None and len(self.genres) < 1:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"There must be at least one genre: {self.genres}")
+        #if self.genres is not None and len(self.genres) < 1:
+        #    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+        #                        detail=f"There must be at least one genre: {self.genres}")
 
-        if self.languages is not None and len(self.languages) < 1:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f"There must be at least one language: {self.languages}")
+        #if self.languages is not None and len(self.languages) < 1:
+        #    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+        #                        detail=f"There must be at least one language: {self.languages}")
 
         if self.description is not None and len(self.description) < 10:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -183,19 +183,23 @@ class GameDtoUpdate(BaseModel):
         return
 
     def to_game(self, game: Game):
-        if self.name is None:
+        if self.name is None or self.name == "":
             self.name = game.name
-        if self.developer is None:
+        if self.developer is None or self.developer == "":
             self.developer = game.developer
-        if self.publisher is None:
+        if self.publisher is None or self.publisher == "":
             self.publisher = game.publisher
         if self.price is None:
             self.price = game.price
-        if self.genres is None:
-            self.genres = game.genres
-        if self.languages is None:
-            self.languages = game.languages
-        if self.description is None:
+        if self.genres is None or len(self.genres) == 0:
+            genres_list = game.genres
+        else:
+            genres_list = transform_genres(self.genres)
+        if self.languages is None or len(self.languages) == 0:
+            languages_list = game.languages
+        else:
+            languages_list = transform_languages(self.languages)
+        if self.description is None or self.description == "":
             self.description = game.description
 
         return Game(
@@ -203,8 +207,8 @@ class GameDtoUpdate(BaseModel):
             name=self.name,
             developer=self.developer,
             publisher=self.publisher,
-            genres=self.genres,
-            languages=self.languages,
+            genres=genres_list,
+            languages=languages_list,
             description=self.description,
             price=self.price,
             release_date=game.release_date,

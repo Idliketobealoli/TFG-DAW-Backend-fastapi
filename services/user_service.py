@@ -21,7 +21,8 @@ class UserService:
         usuario no existe.
         """
         user_from_db = await self.user_repository.get_user_by_username(user.username)
-        if user_from_db is None or not cipher_service.match(user.password, user_from_db.password):
+        if (user_from_db is None or not user_from_db.active
+                or not cipher_service.match(user.password, user_from_db.password)):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail=f"Unauthorized.")
 
